@@ -1,0 +1,102 @@
+I"�E<h2 id="문제">문제</h2>
+<p><a href="https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AWxQ310aOlQDFAWL&amp;categoryId=AWxQ310aOlQDFAWL&amp;categoryType=CODE">SWEA - 햄스터</a></p>
+
+<h2 id="풀이">풀이</h2>
+<p>문제가 복잡해보인다. 하지만 N, M, X의 범위가 매우 작기 때문에 DFS로 문제를 해결할 수 있다.</p>
+
+<p>코드의 최적화를 위해 우리가 겹치는 수를 카운팅했다. 우리가 겹치는 횟수가 작은 곳에 많은 햄스터를 넣어야 최대값을 얻을 수 있다. 예를들어 우리가 0번 선택됐다면 이 우리에는 무조건 X마리의 햄스터를 넣을 수 있다. 따라서 우리가 겹치는 횟수에 따라 정렬을 한 뒤 DFS를 통해 탐색하면 첫번째 얻어지는 값이 최대값이며 사전순으로 첫번째 오는 결과임을 알 수 있다.</p>
+
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Pair</span> <span class="kd">implements</span> <span class="nc">Comparable</span><span class="o">&lt;</span><span class="nc">Pair</span><span class="o">&gt;</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">key</span><span class="o">,</span> <span class="n">val</span><span class="o">;</span>
+		<span class="kd">public</span> <span class="nf">Pair</span><span class="o">(</span><span class="kt">int</span> <span class="n">key</span><span class="o">,</span> <span class="kt">int</span> <span class="n">val</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="nd">@Override</span>
+		<span class="kd">public</span> <span class="kt">int</span> <span class="nf">compareTo</span><span class="o">(</span><span class="nc">Pair</span> <span class="n">p</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">val</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">val</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Record</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">,</span> <span class="n">count</span><span class="o">;</span>
+		<span class="kd">public</span> <span class="nf">Record</span><span class="o">(</span><span class="kt">int</span> <span class="n">left</span><span class="o">,</span> <span class="kt">int</span> <span class="n">right</span><span class="o">,</span> <span class="kt">int</span> <span class="n">count</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">left</span> <span class="o">=</span> <span class="n">left</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">right</span> <span class="o">=</span> <span class="n">right</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">count</span> <span class="o">=</span> <span class="n">count</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	<span class="kd">static</span> <span class="kt">int</span> <span class="no">N</span><span class="o">,</span> <span class="no">X</span><span class="o">,</span> <span class="no">M</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">ans</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="nc">Pair</span><span class="o">[]</span> <span class="n">cnt</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="nc">Record</span><span class="o">[]</span> <span class="n">records</span><span class="o">;</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">BufferedReader</span> <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+		<span class="nc">StringBuilder</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">(</span><span class="mi">1024</span><span class="o">);</span>
+		<span class="kt">int</span> <span class="no">T</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">tc</span><span class="o">=</span><span class="mi">1</span><span class="o">;</span> <span class="n">tc</span><span class="o">&lt;=</span><span class="no">T</span><span class="o">;</span> <span class="n">tc</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="nc">StringTokenizer</span> <span class="n">st</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringTokenizer</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+			<span class="no">N</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+			<span class="no">X</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+			<span class="no">M</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+			<span class="n">ans</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="no">N</span><span class="o">];</span>
+			<span class="n">cnt</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Pair</span><span class="o">[</span><span class="no">N</span><span class="o">];</span>
+			<span class="n">records</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Record</span><span class="o">[</span><span class="no">M</span><span class="o">];</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">cnt</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Pair</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+			<span class="o">}</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">M</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">st</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringTokenizer</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+				<span class="kt">int</span> <span class="n">left</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">())</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+				<span class="kt">int</span> <span class="n">right</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">())</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+				<span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+				<span class="n">records</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Record</span><span class="o">(</span><span class="n">left</span><span class="o">,</span> <span class="n">right</span><span class="o">,</span> <span class="n">count</span><span class="o">);</span>
+				<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="n">left</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;=</span><span class="n">right</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+					<span class="n">cnt</span><span class="o">[</span><span class="n">j</span><span class="o">].</span><span class="na">val</span><span class="o">++;</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">cnt</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">cnt</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">val</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="n">ans</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="no">X</span><span class="o">;</span>
+			<span class="o">}</span>
+			<span class="nc">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">cnt</span><span class="o">);</span>
+			
+			<span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"#"</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">tc</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">" "</span><span class="o">);</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">dfs</span><span class="o">(</span><span class="mi">0</span><span class="o">))</span> <span class="o">{</span>
+				<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="nl">n:</span> <span class="n">ans</span><span class="o">)</span> <span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">n</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">" "</span><span class="o">);</span>
+				<span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+				<span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(-</span><span class="mi">1</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">sb</span><span class="o">);</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">dfs</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">i</span> <span class="o">==</span> <span class="no">N</span> <span class="o">||</span> <span class="n">cnt</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">val</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">return</span> <span class="n">same</span><span class="o">();</span>
+		
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">val</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">val</span><span class="o">&lt;=</span><span class="no">X</span><span class="o">;</span> <span class="n">val</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">ans</span><span class="o">[</span><span class="n">cnt</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">key</span><span class="o">]</span> <span class="o">=</span> <span class="n">val</span><span class="o">;</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">dfs</span><span class="o">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">))</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="n">ans</span><span class="o">[</span><span class="n">cnt</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">key</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">same</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">for</span><span class="o">(</span><span class="nc">Record</span> <span class="nl">r:</span> <span class="n">records</span><span class="o">)</span> <span class="o">{</span>
+			<span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="na">left</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;=</span><span class="n">r</span><span class="o">.</span><span class="na">right</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">sum</span> <span class="o">+=</span> <span class="n">ans</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+			<span class="o">}</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">sum</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="na">count</span><span class="o">)</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

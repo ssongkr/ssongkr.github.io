@@ -1,0 +1,157 @@
+I"rf<h2 id="문제">문제</h2>
+<p><a href="https://programmers.co.kr/learn/courses/30/lessons/60061">프로그래머스 - 기둥과 보 설치</a></p>
+
+<hr />
+<h2 id="설명">설명</h2>
+<p>가사의 단어와 쿼리가 주어졌을 때, 쿼리에 맞는 단어가 몇개인지 구하는 문제다.</p>
+
+<hr />
+<h2 id="풀이">풀이</h2>
+<p>해싱과 이분탐색을 이용하여 문제를 풀이하였다.</p>
+
+<ol>
+  <li>문제의 길이가 최대 10000이기 때문에, 문자열을 길이별로 저장한다.</li>
+  <li>이분탐색을 이용해 lower bound와 upper bound를 검색할 수 있는 단어의 개수를 찾는다.</li>
+</ol>
+
+<p>주의할점은 쿼리의 시작이 ?라면 이분탐색을 진행할 수 없기 때문에, word와 쿼리를 모두 뒤집에서 이분탐색을 진행한다. ?가 알파벳 사이에 오는 경우가 없기 때문에 가능하다.</p>
+
+<p>이 문제는 일반적으로 트라이로 해결 가능하다고 한다. 다음에 트라이를 이용한 풀이도 올려봐야겠다.</p>
+
+<hr />
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+
+    <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Info</span> <span class="kd">implements</span> <span class="nc">Comparable</span><span class="o">&lt;</span><span class="nc">Info</span><span class="o">&gt;</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">t</span><span class="o">;</span>
+        <span class="kd">public</span> <span class="nf">Info</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">t</span> <span class="o">=</span> <span class="n">t</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nd">@Override</span>
+        <span class="kd">public</span> <span class="kt">int</span> <span class="nf">compareTo</span><span class="o">(</span><span class="nc">Info</span> <span class="n">i</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">x</span> <span class="o">==</span> <span class="n">i</span><span class="o">.</span><span class="na">x</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">y</span> <span class="o">==</span> <span class="n">i</span><span class="o">.</span><span class="na">y</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">t</span><span class="o">,</span> <span class="n">i</span><span class="o">.</span><span class="na">t</span><span class="o">);</span>
+                <span class="o">}</span>
+                <span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">y</span><span class="o">,</span> <span class="n">i</span><span class="o">.</span><span class="na">y</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">i</span><span class="o">.</span><span class="na">x</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">static</span> <span class="kt">int</span> <span class="no">N</span><span class="o">;</span>
+    <span class="kd">static</span> <span class="kt">boolean</span><span class="o">[][][][]</span> <span class="n">map</span><span class="o">;</span>
+
+    <span class="kd">static</span> <span class="nc">PriorityQueue</span><span class="o">&lt;</span><span class="nc">Info</span><span class="o">&gt;</span> <span class="n">pq</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PriorityQueue</span><span class="o">&lt;</span><span class="nc">Info</span><span class="o">&gt;();</span>
+
+    <span class="kd">public</span> <span class="kt">int</span><span class="o">[][]</span> <span class="nf">solution</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="kt">int</span><span class="o">[][]</span> <span class="n">build_frame</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="no">N</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">2</span><span class="o">;</span>
+        <span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="no">N</span><span class="o">+</span><span class="mi">2</span><span class="o">][</span><span class="no">N</span><span class="o">+</span><span class="mi">2</span><span class="o">][</span><span class="no">N</span><span class="o">+</span><span class="mi">2</span><span class="o">][</span><span class="no">N</span><span class="o">+</span><span class="mi">2</span><span class="o">];</span>
+
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="nl">frame:</span> <span class="n">build_frame</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">frame</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+            <span class="kt">int</span> <span class="n">y</span> <span class="o">=</span> <span class="n">frame</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+            <span class="kt">int</span> <span class="n">type</span> <span class="o">=</span> <span class="n">frame</span><span class="o">[</span><span class="mi">2</span><span class="o">];</span>
+            <span class="kt">int</span> <span class="n">command</span> <span class="o">=</span> <span class="n">frame</span><span class="o">[</span><span class="mi">3</span><span class="o">];</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">command</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 제거</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">type</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 기둥 </span>
+                    <span class="n">map</span><span class="o">[</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">][</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                    <span class="k">if</span><span class="o">(!</span><span class="n">valid</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">type</span><span class="o">))</span> <span class="o">{</span>
+                        <span class="n">map</span><span class="o">[</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">][</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                    <span class="o">}</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="n">map</span><span class="o">[</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">][</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="o">][</span><span class="n">y</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                    <span class="k">if</span><span class="o">(!</span><span class="n">valid</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">type</span><span class="o">))</span> <span class="o">{</span>
+                        <span class="n">map</span><span class="o">[</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">][</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="o">][</span><span class="n">y</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">canInstall</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">type</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="n">pq</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Info</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">,</span> <span class="n">type</span><span class="o">));</span>
+                    <span class="k">if</span><span class="o">(</span><span class="n">type</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="n">map</span><span class="o">[</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">][</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                        <span class="n">map</span><span class="o">[</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">][</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="o">][</span><span class="n">y</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="nc">Queue</span><span class="o">&lt;</span><span class="nc">Info</span><span class="o">&gt;</span> <span class="n">q</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedList</span><span class="o">&lt;</span><span class="nc">Info</span><span class="o">&gt;();</span>
+        <span class="k">while</span><span class="o">(!</span><span class="n">pq</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">Info</span> <span class="n">info</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">info</span><span class="o">.</span><span class="na">t</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">map</span><span class="o">[</span><span class="n">info</span><span class="o">.</span><span class="na">x</span><span class="o">][</span><span class="n">info</span><span class="o">.</span><span class="na">y</span><span class="o">][</span><span class="n">info</span><span class="o">.</span><span class="na">x</span><span class="o">][</span><span class="n">info</span><span class="o">.</span><span class="na">y</span><span class="o">+</span><span class="mi">1</span><span class="o">])</span> <span class="o">{</span>
+                    <span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">info</span><span class="o">);</span>
+                    <span class="n">map</span><span class="o">[</span><span class="n">info</span><span class="o">.</span><span class="na">x</span><span class="o">][</span><span class="n">info</span><span class="o">.</span><span class="na">y</span><span class="o">][</span><span class="n">info</span><span class="o">.</span><span class="na">x</span><span class="o">][</span><span class="n">info</span><span class="o">.</span><span class="na">y</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">if</span><span class="o">(</span><span class="n">map</span><span class="o">[</span><span class="n">info</span><span class="o">.</span><span class="na">x</span><span class="o">][</span><span class="n">info</span><span class="o">.</span><span class="na">y</span><span class="o">][</span><span class="n">info</span><span class="o">.</span><span class="na">x</span><span class="o">+</span><span class="mi">1</span><span class="o">][</span><span class="n">info</span><span class="o">.</span><span class="na">y</span><span class="o">])</span> <span class="o">{</span>
+                    <span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">info</span><span class="o">);</span>
+                    <span class="n">map</span><span class="o">[</span><span class="n">info</span><span class="o">.</span><span class="na">x</span><span class="o">][</span><span class="n">info</span><span class="o">.</span><span class="na">y</span><span class="o">][</span><span class="n">info</span><span class="o">.</span><span class="na">x</span><span class="o">+</span><span class="mi">1</span><span class="o">][</span><span class="n">info</span><span class="o">.</span><span class="na">y</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="kt">int</span><span class="o">[][]</span> <span class="n">answer</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">q</span><span class="o">.</span><span class="na">size</span><span class="o">()][</span><span class="mi">3</span><span class="o">];</span>
+        <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">while</span><span class="o">(!</span><span class="n">q</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">Info</span> <span class="n">info</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+            <span class="n">answer</span><span class="o">[</span><span class="n">idx</span><span class="o">++]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="n">info</span><span class="o">.</span><span class="na">x</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="n">info</span><span class="o">.</span><span class="na">y</span><span class="o">,</span> <span class="n">info</span><span class="o">.</span><span class="na">t</span> <span class="o">};</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">answer</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">valid</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span><span class="o">(</span><span class="nc">Info</span> <span class="nl">i:</span> <span class="n">pq</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">i</span><span class="o">.</span><span class="na">t</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span><span class="o">(!</span><span class="n">map</span><span class="o">[</span><span class="n">i</span><span class="o">.</span><span class="na">x</span><span class="o">][</span><span class="n">i</span><span class="o">.</span><span class="na">y</span><span class="o">][</span><span class="n">i</span><span class="o">.</span><span class="na">x</span><span class="o">][</span><span class="n">i</span><span class="o">.</span><span class="na">y</span><span class="o">+</span><span class="mi">1</span><span class="o">])</span> <span class="o">{</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="k">if</span><span class="o">(!</span><span class="n">map</span><span class="o">[</span><span class="n">i</span><span class="o">.</span><span class="na">x</span><span class="o">][</span><span class="n">i</span><span class="o">.</span><span class="na">y</span><span class="o">][</span><span class="n">i</span><span class="o">.</span><span class="na">x</span><span class="o">+</span><span class="mi">1</span><span class="o">][</span><span class="n">i</span><span class="o">.</span><span class="na">y</span><span class="o">])</span> <span class="o">{</span>
+                    <span class="k">continue</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">if</span><span class="o">(!</span><span class="n">canInstall</span><span class="o">(</span><span class="n">i</span><span class="o">.</span><span class="na">x</span><span class="o">,</span> <span class="n">i</span><span class="o">.</span><span class="na">y</span><span class="o">,</span> <span class="n">i</span><span class="o">.</span><span class="na">t</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">canInstall</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 기둥 </span>
+            <span class="k">if</span><span class="o">(</span><span class="n">isBottom</span><span class="o">(</span><span class="n">y</span><span class="o">)</span> <span class="o">||</span> <span class="n">hasVer</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">||</span> <span class="n">hasHor</span><span class="o">(</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">y</span><span class="o">)</span> <span class="o">||</span> <span class="n">hasHor</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">))</span> <span class="o">{</span>
+                <span class="n">map</span><span class="o">[</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">][</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="k">if</span><span class="o">(</span><span class="n">hasVer</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">||</span> <span class="n">hasVer</span><span class="o">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="n">hasHor</span><span class="o">(</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">y</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">hasHor</span><span class="o">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">y</span><span class="o">)))</span> <span class="o">{</span>
+                <span class="n">map</span><span class="o">[</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">][</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="o">][</span><span class="n">y</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isBottom</span><span class="o">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasHor</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">map</span><span class="o">[</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">][</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="o">][</span><span class="n">y</span><span class="o">];</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">hasVer</span><span class="o">(</span><span class="kt">int</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">map</span><span class="o">[</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">][</span><span class="n">x</span><span class="o">][</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="o">];</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

@@ -1,0 +1,111 @@
+I"FA<h2 id="문제">문제</h2>
+<p><a href="https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AWm8hNu6llcDFASj&amp;categoryId=AWm8hNu6llcDFASj&amp;categoryType=CODE">SWEA - 종구의 딸 이름 짓기</a></p>
+
+<h2 id="풀이">풀이</h2>
+<p>BFS를 통해 해결할 수 있는 문제다. 단, BFS를 현재 큐의 사이즈만큼만 돌려서 큐 내에 있는 모든 노드가 시작점으로부터 같은 위치에 있도록 한다. 그리고 큐에 들어있는 값 중 최소값만 다음 BFS에 사용하면 사전 순으로 가장 짧은 문자열(이름)을 만들 수 있다.</p>
+
+<p>현재 큐에서 Min과 같은 문자를 가지고 있다면 모두 같은 문자열 정보를 가지고 있는 것과 동일한 의미이기 때문에 Visit 처리를 통해 중복방문을 막아도 정답에 지장이 없다.</p>
+
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Pos</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">;</span>
+		<span class="kd">public</span> <span class="nf">Pos</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">col</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">row</span> <span class="o">=</span> <span class="n">row</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">col</span> <span class="o">=</span> <span class="n">col</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	
+	<span class="kd">static</span> <span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">m</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">char</span><span class="o">[][]</span> <span class="n">map</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">boolean</span><span class="o">[][]</span> <span class="n">visit</span><span class="o">;</span>
+	
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">char</span> <span class="no">CINF</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">dr</span> <span class="o">=</span> <span class="o">{</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">};</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">dc</span> <span class="o">=</span> <span class="o">{</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">};</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">StringBuilder</span> <span class="n">sb</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">(</span><span class="mi">102400</span><span class="o">);</span>
+		<span class="nc">MyScanner</span> <span class="n">sc</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MyScanner</span><span class="o">();</span>
+		<span class="kt">int</span> <span class="n">tc</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">nextInt</span><span class="o">();</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">t</span><span class="o">=</span><span class="mi">1</span><span class="o">;</span> <span class="n">t</span><span class="o">&lt;=</span><span class="n">tc</span><span class="o">;</span> <span class="n">t</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">n</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">nextInt</span><span class="o">();</span>
+			<span class="n">m</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">nextInt</span><span class="o">();</span>
+			<span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span><span class="o">[</span><span class="n">n</span><span class="o">][</span><span class="n">m</span><span class="o">];</span>
+			<span class="n">visit</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">n</span><span class="o">][</span><span class="n">m</span><span class="o">];</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">map</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">nextLine</span><span class="o">().</span><span class="na">toCharArray</span><span class="o">();</span>
+			<span class="o">}</span>
+			<span class="n">sb</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"#"</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">t</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">" "</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">getName</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">sb</span><span class="o">);</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">StringBuilder</span> <span class="n">ret</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">(</span><span class="mi">2048</span><span class="o">);</span>
+		<span class="nc">Queue</span><span class="o">&lt;</span><span class="nc">Pos</span><span class="o">&gt;</span> <span class="n">q</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedList</span><span class="o">&lt;&gt;();</span>
+		<span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="k">new</span> <span class="nc">Pos</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">));</span>
+		<span class="kt">char</span> <span class="n">curMin</span> <span class="o">=</span> <span class="n">map</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="mi">0</span><span class="o">];</span>
+		<span class="n">ret</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">map</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="mi">0</span><span class="o">]);</span>
+		<span class="n">visit</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="k">while</span><span class="o">(!</span><span class="n">q</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+			<span class="kt">char</span> <span class="n">nextMin</span> <span class="o">=</span> <span class="no">CINF</span><span class="o">;</span>
+			<span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+			<span class="k">while</span><span class="o">(</span><span class="n">size</span><span class="o">--</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+				<span class="nc">Pos</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+				<span class="c1">// 경로가 최소가 되는 노드만 사용하기 위함.</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">map</span><span class="o">[</span><span class="n">cur</span><span class="o">.</span><span class="na">row</span><span class="o">][</span><span class="n">cur</span><span class="o">.</span><span class="na">col</span><span class="o">]</span> <span class="o">!=</span> <span class="n">curMin</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">continue</span><span class="o">;</span>
+				<span class="o">}</span>
+				<span class="c1">// 따라서 사이즈 사이클 내의 다음에 검색하는 노드 경로의 문자열은 모두 동일하다.</span>
+				<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">dr</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+					<span class="kt">int</span> <span class="n">nr</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="na">row</span> <span class="o">+</span> <span class="n">dr</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+					<span class="kt">int</span> <span class="n">nc</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="na">col</span> <span class="o">+</span> <span class="n">dc</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+					<span class="k">if</span><span class="o">(</span><span class="n">inside</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">visit</span><span class="o">[</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="n">map</span><span class="o">[</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">]</span> <span class="o">&lt;=</span> <span class="n">nextMin</span><span class="o">)</span> <span class="o">{</span>
+						<span class="n">visit</span><span class="o">[</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+						<span class="n">nextMin</span> <span class="o">=</span> <span class="n">map</span><span class="o">[</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">];</span>
+						<span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="k">new</span> <span class="nc">Pos</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">));</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+			<span class="n">curMin</span> <span class="o">=</span> <span class="n">nextMin</span><span class="o">;</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">nextMin</span> <span class="o">!=</span> <span class="no">CINF</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">ret</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">nextMin</span><span class="o">);</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">ret</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">inside</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">col</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="o">(</span><span class="n">row</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="n">m</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+<h2 id="myscanner">MyScanner</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">MyScanner</span> <span class="o">{</span>
+	<span class="kd">private</span> <span class="nc">BufferedReader</span> <span class="n">br</span><span class="o">;</span>
+	<span class="kd">private</span> <span class="nc">StringTokenizer</span> <span class="n">st</span><span class="o">;</span>
+	
+	<span class="kd">public</span> <span class="nf">MyScanner</span><span class="o">()</span> <span class="o">{</span>
+		<span class="n">st</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringTokenizer</span><span class="o">(</span><span class="s">""</span><span class="o">);</span>
+		<span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kt">int</span> <span class="nf">nextInt</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="k">while</span><span class="o">(!</span><span class="n">st</span><span class="o">.</span><span class="na">hasMoreTokens</span><span class="o">())</span> <span class="o">{</span>
+			<span class="n">st</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringTokenizer</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kt">void</span> <span class="nf">close</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">Exception</span><span class="o">{</span>
+		<span class="n">br</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

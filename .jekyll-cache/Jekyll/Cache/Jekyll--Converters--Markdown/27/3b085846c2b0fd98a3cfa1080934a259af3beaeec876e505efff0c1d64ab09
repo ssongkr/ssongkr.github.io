@@ -1,0 +1,61 @@
+I"$<h2 id="문제">문제</h2>
+<p><a href="https://programmers.co.kr/learn/courses/30/lessons/42627?language=java">프로그래머스 - 디스크 컨트롤러</a></p>
+
+<h2 id="풀이">풀이</h2>
+<p>현재 시간을 기준으로 소요되는 시간이 가장 짧은 작업을 선택하면 된다.</p>
+
+<p>소요 시간이 짧은 작업을 먼저 처리할 수록 대기시간이 짧아지기 때문이다.</p>
+
+<h2 id="코드">코드</h2>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+	<span class="kt">int</span> <span class="nf">solution</span><span class="o">(</span><span class="kt">int</span><span class="o">[][]</span> <span class="n">jobs</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">answer</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="nc">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">jobs</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Comparator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">[]&gt;()</span> <span class="o">{</span>
+			<span class="nd">@Override</span>
+			<span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">o1</span><span class="o">,</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">o1</span><span class="o">[</span><span class="mi">0</span><span class="o">],</span> <span class="n">o2</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+			<span class="o">}</span>
+		<span class="o">});</span>
+        
+        <span class="nc">PriorityQueue</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">[]&gt;</span> <span class="n">pq</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PriorityQueue</span><span class="o">&lt;&gt;(</span><span class="mi">512</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Comparator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">[]&gt;()</span> <span class="o">{</span>
+			<span class="nd">@Override</span>
+			<span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">o1</span><span class="o">,</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">o1</span><span class="o">[</span><span class="mi">1</span><span class="o">],</span> <span class="n">o2</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
+			<span class="o">}</span>
+		<span class="o">});</span>
+        
+        <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">while</span><span class="o">(</span><span class="n">idx</span> <span class="o">&lt;</span> <span class="n">jobs</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+        	<span class="k">while</span><span class="o">(</span><span class="n">idx</span> <span class="o">&lt;</span> <span class="n">jobs</span><span class="o">.</span><span class="na">length</span> <span class="o">&amp;&amp;</span> <span class="n">jobs</span><span class="o">[</span><span class="n">idx</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span> <span class="o">&lt;=</span> <span class="n">time</span><span class="o">)</span> <span class="o">{</span>
+        		<span class="n">pq</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">jobs</span><span class="o">[</span><span class="n">idx</span><span class="o">]);</span>
+        		<span class="n">idx</span><span class="o">++;</span>
+        	<span class="o">}</span>
+        	<span class="k">if</span><span class="o">(</span><span class="n">pq</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+        		<span class="n">time</span><span class="o">++;</span>
+        	<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        		<span class="kt">int</span><span class="o">[]</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+        		<span class="kt">int</span> <span class="n">waiting</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">cur</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+        		<span class="kt">int</span> <span class="n">runtime</span> <span class="o">=</span> <span class="n">cur</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+        		<span class="n">sum</span> <span class="o">+=</span> <span class="n">waiting</span> <span class="o">+</span> <span class="n">runtime</span><span class="o">;</span>
+        		<span class="n">time</span> <span class="o">+=</span> <span class="n">runtime</span><span class="o">;</span>
+        	<span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">while</span><span class="o">(!</span><span class="n">pq</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+    		<span class="kt">int</span><span class="o">[]</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+    		<span class="kt">int</span> <span class="n">waiting</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">cur</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+    		<span class="kt">int</span> <span class="n">runtime</span> <span class="o">=</span> <span class="n">cur</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+    		<span class="n">sum</span> <span class="o">+=</span> <span class="n">waiting</span> <span class="o">+</span> <span class="n">runtime</span><span class="o">;</span>
+    		<span class="n">time</span> <span class="o">+=</span> <span class="n">runtime</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="n">sum</span> <span class="o">/</span> <span class="n">jobs</span><span class="o">.</span><span class="na">length</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">answer</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

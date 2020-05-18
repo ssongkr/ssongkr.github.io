@@ -1,0 +1,35 @@
+I"y	<hr />
+<h2 id="rest-api란">REST API란?</h2>
+<p>REST API를 구현하기에 앞서 REST가 무엇인지 알아보자. REST는 Representational State Transfer의 약어로서 2000년도에 로이 필딩(Roy Fielding)의 박사학위 논문에서 최초로 소개되었다. 로이 필딩은 웹이 설계의 우수성에 비해 제대로 사용되어지지 못하는 모습에 안타까워하며 웹의 장점을 최대한 활용할 수 있는 아키텍처로써 REST를 발표했다. REST의 기본 원칙을 성실히 지킨 서비스 디자인을 RESTful이라고 한다.</p>
+
+<hr />
+<h2 id="rest-api의-구성">REST API의 구성</h2>
+
+<h3 id="1-자원resource">1. 자원(Resource)</h3>
+<p>일반적으로 REST에서 자원은 URL을 말한다.</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">/</span><span class="n">todos</span>
+<span class="o">/</span><span class="n">todos</span><span class="o">/</span><span class="n">today</span>
+</code></pre></div></div>
+
+<hr />
+<h3 id="2-행위verb">2. 행위(Verb)</h3>
+<p>Http method(GET, POST, PUT, DELETE etc..)를 나타낸다.</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">GET</span> <span class="o">/</span><span class="n">todos</span><span class="o">/</span><span class="n">today</span>
+</code></pre></div></div>
+
+<hr />
+<h3 id="3-표현representations">3. 표현(Representations)</h3>
+<p>요청한 자원의 현재 상태를 표현하는 하나의 방식이다. XML, HTML, JSON 등이 있다.</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"todo"</span><span class="p">:</span><span class="w"> </span><span class="s2">"study english"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"deadline"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2020-03-11"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>다음 포스팅에서는 본격적으로 프로젝트를 생성하고, 소스코드를 작성하도록 하겠다.</p>
+
+<h2 id="references">References</h2>
+<p>https://velog.io/@wlsdud2194/HTTP-REST-API-%EB%9E%80
+https://poiemaweb.com/js-rest-api
+https://symfonycasts.com/screencast/rest/rest</p>
+:ET

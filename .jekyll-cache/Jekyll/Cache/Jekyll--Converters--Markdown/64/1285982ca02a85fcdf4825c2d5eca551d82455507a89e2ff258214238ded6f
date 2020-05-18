@@ -1,0 +1,78 @@
+I"�4<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/17404">백준 - RGB거리2</a></p>
+
+<hr />
+<h2 id="설명">설명</h2>
+<p>RGB 거리에 있는 집을 색칠하는데 드는 최소 비용을 구하는 문제다. 단, 인접한 집의 색은 달라야하고 처음 집과 마지막 집의 색이 달라야한다.</p>
+
+<hr />
+<h2 id="풀이">풀이</h2>
+<p>DP배열에 시작지점에 따른 비용의 최소값을 저장하였다. DP배열의 첫번째 요소는 K지점에서 N-K-1지점을 나타낸다. 그리고 두번째 요소와 세번째 요소는 K지점과 N-K-1지점의 색이 정해졌을때의 최소값을 저장한다. 이 방식으로 풀게되면 N이 홀수인 경우와 짝수인 경우를 잘 나누어 문제를 풀이해야한다.</p>
+
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+	
+	<span class="kd">static</span> <span class="kt">int</span> <span class="n">n</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">int</span><span class="o">[][]</span> <span class="n">cost</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">int</span><span class="o">[][][]</span> <span class="n">cache</span><span class="o">;</span>
+	
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">INF</span> <span class="o">=</span> <span class="mi">987654321</span><span class="o">;</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">BufferedReader</span> <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+		<span class="n">n</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+		<span class="n">cost</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">][</span><span class="mi">3</span><span class="o">];</span>
+		<span class="n">cache</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[(</span><span class="n">n</span> <span class="o">/</span> <span class="mi">2</span><span class="o">)</span> <span class="o">+</span> <span class="mi">1</span><span class="o">][</span><span class="mi">3</span><span class="o">][</span><span class="mi">3</span><span class="o">];</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="nc">StringTokenizer</span> <span class="n">st</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringTokenizer</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">cost</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		
+		<span class="kt">int</span> <span class="n">min</span> <span class="o">=</span> <span class="no">INF</span><span class="o">;</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">j</span><span class="o">)</span> <span class="k">continue</span><span class="o">;</span>
+				<span class="kt">int</span> <span class="n">res</span> <span class="o">=</span> <span class="n">dp</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span> <span class="o">+</span> <span class="n">cost</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="n">cost</span><span class="o">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">][</span><span class="n">j</span><span class="o">];</span>
+				<span class="n">min</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">min</span><span class="o">,</span> <span class="n">res</span><span class="o">);</span>
+				
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">min</span><span class="o">);</span>
+		<span class="n">br</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">dp</span><span class="o">(</span><span class="kt">int</span> <span class="n">s</span><span class="o">,</span> <span class="kt">int</span> <span class="n">e</span><span class="o">,</span> <span class="kt">int</span> <span class="n">sp</span><span class="o">,</span> <span class="kt">int</span> <span class="n">ep</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">cache</span><span class="o">[</span><span class="n">s</span><span class="o">][</span><span class="n">sp</span><span class="o">][</span><span class="n">ep</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">cache</span><span class="o">[</span><span class="n">s</span><span class="o">][</span><span class="n">sp</span><span class="o">][</span><span class="n">ep</span><span class="o">];</span>
+		<span class="o">}</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">s</span> <span class="o">&gt;</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="o">}</span> <span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">s</span> <span class="o">==</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+			<span class="kt">int</span> <span class="n">min</span> <span class="o">=</span> <span class="no">INF</span><span class="o">;</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">i</span> <span class="o">!=</span> <span class="n">sp</span> <span class="o">&amp;&amp;</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">ep</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">min</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">min</span><span class="o">,</span> <span class="n">cost</span><span class="o">[</span><span class="n">s</span><span class="o">][</span><span class="n">i</span><span class="o">]);</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+			<span class="k">return</span> <span class="n">cache</span><span class="o">[</span><span class="n">s</span><span class="o">][</span><span class="n">sp</span><span class="o">][</span><span class="n">ep</span><span class="o">]</span> <span class="o">=</span> <span class="n">min</span><span class="o">;</span>
+		<span class="o">}</span>
+		
+		<span class="kt">int</span> <span class="n">min</span> <span class="o">=</span> <span class="no">INF</span><span class="o">;</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">sp</span><span class="o">)</span> <span class="k">continue</span><span class="o">;</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="n">ep</span> <span class="o">||</span> <span class="o">(</span><span class="n">e</span> <span class="o">-</span> <span class="n">s</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span><span class="o">))</span> <span class="k">continue</span><span class="o">;</span>
+				<span class="kt">int</span> <span class="n">res</span> <span class="o">=</span> <span class="n">dp</span><span class="o">(</span><span class="n">s</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">e</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span> <span class="o">+</span> <span class="n">cost</span><span class="o">[</span><span class="n">s</span><span class="o">][</span><span class="n">i</span><span class="o">]</span> <span class="o">+</span> <span class="n">cost</span><span class="o">[</span><span class="n">e</span><span class="o">][</span><span class="n">j</span><span class="o">];</span>
+				<span class="n">min</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">min</span><span class="o">,</span> <span class="n">res</span><span class="o">);</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">cache</span><span class="o">[</span><span class="n">s</span><span class="o">][</span><span class="n">sp</span><span class="o">][</span><span class="n">ep</span><span class="o">]</span> <span class="o">=</span> <span class="n">min</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

@@ -1,0 +1,80 @@
+I"�-<h2 id="문제">문제</h2>
+<p><a href="https://programmers.co.kr/learn/challenges">프로그래머스</a></p>
+
+<hr />
+<h2 id="설명">설명</h2>
+<p>유저의 아이디와 밴을 할 수 있는 아이디가 주어졌을때, 유저를 밴할 수 있는 경우의 수를 모두 구하는 문제다.</p>
+
+<hr />
+<h2 id="풀이">풀이</h2>
+<p>밴 가능한 아이디를 통해 밴을 할 수 있는 유저의 경우의 수를 미리 계산해놓았다. 그 후 DFS를 통해 가능한 경우의 수를 완전탐색 하였다. 주의할 점은 서로 다른 밴 아이디를 통해 같은 유저들을 밴하는 경우도 있기 때문에 비트마스킹을 통해 중복 처리를 막았다.</p>
+
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test03</span> <span class="o">{</span>
+	
+	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+		
+		<span class="kd">static</span> <span class="kt">boolean</span><span class="o">[]</span> <span class="n">visit</span><span class="o">;</span>
+		<span class="kd">static</span> <span class="kt">boolean</span><span class="o">[]</span> <span class="n">cache</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">8</span><span class="o">];</span>
+		<span class="kd">static</span> <span class="kt">boolean</span><span class="o">[][]</span> <span class="n">possible</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="mi">10</span><span class="o">][</span><span class="mi">10</span><span class="o">];</span>
+		<span class="kd">static</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">bannedId</span><span class="o">,</span> <span class="n">userId</span><span class="o">;</span>
+		
+	    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">solution</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">user_id</span><span class="o">,</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">banned_id</span><span class="o">)</span> <span class="o">{</span>
+	    	<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">user_id</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+	    		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">banned_id</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+	    			<span class="k">if</span><span class="o">(</span><span class="n">canBan</span><span class="o">(</span><span class="n">user_id</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="n">banned_id</span><span class="o">[</span><span class="n">j</span><span class="o">]))</span> <span class="o">{</span>
+	    				<span class="n">possible</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+	    			<span class="o">}</span>
+	    		<span class="o">}</span>
+	    	<span class="o">}</span>
+	    	<span class="n">userId</span> <span class="o">=</span> <span class="n">user_id</span><span class="o">;</span>
+	    	<span class="n">bannedId</span> <span class="o">=</span> <span class="n">banned_id</span><span class="o">;</span>
+	    	<span class="n">visit</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">user_id</span><span class="o">.</span><span class="na">length</span><span class="o">];</span>
+	    	<span class="k">return</span> <span class="nf">dfs</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+	    <span class="o">}</span>
+	    
+	    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">dfs</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="o">)</span> <span class="o">{</span>
+	    	<span class="k">if</span><span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="n">bannedId</span><span class="o">.</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span>
+	    		<span class="k">if</span><span class="o">(!</span><span class="n">cache</span><span class="o">[</span><span class="n">mask</span><span class="o">])</span> <span class="o">{</span>
+	    			<span class="n">cache</span><span class="o">[</span><span class="n">mask</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+	    			<span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+	    		<span class="o">}</span>
+	    		<span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+	    	<span class="o">}</span>
+	    	
+	    	<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+	    	<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">userId</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+	    		<span class="k">if</span><span class="o">(</span><span class="n">possible</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">visit</span><span class="o">[</span><span class="n">i</span><span class="o">])</span> <span class="o">{</span>
+	    			<span class="n">visit</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+	    			<span class="n">ret</span> <span class="o">+=</span> <span class="n">dfs</span><span class="o">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">mask</span> <span class="o">|</span> <span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">i</span><span class="o">));</span>
+	    			<span class="n">visit</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+	    		<span class="o">}</span>
+	    	<span class="o">}</span>
+	    	<span class="k">return</span> <span class="n">ret</span><span class="o">;</span>
+	    <span class="o">}</span>
+	    
+	    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">canBan</span><span class="o">(</span><span class="nc">String</span> <span class="n">user</span><span class="o">,</span> <span class="nc">String</span> <span class="n">banned</span><span class="o">)</span> <span class="o">{</span>
+	    	<span class="k">if</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">!=</span> <span class="n">banned</span><span class="o">.</span><span class="na">length</span><span class="o">())</span> <span class="o">{</span>
+	    		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	    	<span class="o">}</span>
+	    	<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">user</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+	    		<span class="k">if</span><span class="o">(</span><span class="n">banned</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">==</span> <span class="sc">'*'</span><span class="o">)</span> <span class="k">continue</span><span class="o">;</span>
+	    		<span class="k">if</span><span class="o">(</span><span class="n">user</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">!=</span> <span class="n">banned</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">))</span> <span class="o">{</span>
+	    			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	    		<span class="o">}</span>
+	    	<span class="o">}</span>
+			<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+		<span class="nc">Solution</span> <span class="n">sol</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Solution</span><span class="o">();</span>
+		<span class="nc">String</span><span class="o">[]</span> <span class="n">user_id</span> <span class="o">=</span> <span class="o">{</span><span class="s">"frodo"</span><span class="o">,</span> <span class="s">"fradi"</span><span class="o">,</span> <span class="s">"crodo"</span><span class="o">,</span> <span class="s">"abc123"</span><span class="o">,</span> <span class="s">"frodoc"</span><span class="o">};</span>
+		<span class="nc">String</span><span class="o">[]</span> <span class="n">banned_id</span> <span class="o">=</span> <span class="o">{</span><span class="s">"*rodo"</span><span class="o">,</span> <span class="s">"*rodo"</span><span class="o">,</span> <span class="s">"******"</span><span class="o">};</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"ANS: "</span> <span class="o">+</span> <span class="n">sol</span><span class="o">.</span><span class="na">solution</span><span class="o">(</span><span class="n">user_id</span><span class="o">,</span> <span class="n">banned_id</span><span class="o">));</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

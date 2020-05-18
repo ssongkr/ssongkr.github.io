@@ -1,0 +1,78 @@
+I"�/<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/16929">백준 - Two Dots</a></p>
+
+<h2 id="풀이">풀이</h2>
+<p>DFS를 이용하여 사이클을 찾는 문제다.
+만약 시작 위치와 다음 위치가 동일하다면 사이클이 있는 것으로 판단할 수 있다.</p>
+
+<p>주의해야할 점은 사이클의 크기가 4 이상이어야 한다. 즉, 출발하자마자 시작지점으로 바로 되돌아가는 것은 사이클이 아니다. 이를 해결하기 위해서는 다음 두 가지 방법을 사용할 수 있다.</p>
+
+<ul>
+  <li>현재까지 이동거리를 계산한다.</li>
+  <li>이동했던 반대 방향으로는 이동하지 않도록 한다.</li>
+</ul>
+
+<p>위 두가지 방법 중 하나를 선택하여 크기가 4이상인 사이클만 찾도록 제한할 수 있다.</p>
+
+<h2 id="코드">코드</h2>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+	<span class="kd">static</span> <span class="kt">int</span> <span class="no">N</span><span class="o">,</span> <span class="no">M</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">char</span><span class="o">[][]</span> <span class="n">color</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">boolean</span><span class="o">[][]</span> <span class="n">visit</span><span class="o">;</span>
+	
+	<span class="kd">static</span> <span class="kt">int</span> <span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">dr</span> <span class="o">=</span> <span class="o">{</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">};</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">dc</span> <span class="o">=</span> <span class="o">{</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">};</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">printer</span> <span class="o">=</span> <span class="o">{</span><span class="s">"No"</span><span class="o">,</span> <span class="s">"Yes"</span><span class="o">};</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">BufferedReader</span> <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+		<span class="nc">StringTokenizer</span> <span class="n">st</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringTokenizer</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+		<span class="no">N</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+		<span class="no">M</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+		<span class="n">color</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span><span class="o">[</span><span class="no">N</span><span class="o">][</span><span class="no">M</span><span class="o">];</span>
+		<span class="n">visit</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="no">N</span><span class="o">][</span><span class="no">M</span><span class="o">];</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">color</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">().</span><span class="na">toCharArray</span><span class="o">();</span>
+		<span class="o">}</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">printer</span><span class="o">[</span><span class="n">hasCycle</span><span class="o">()]);</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">hasCycle</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">for</span><span class="o">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">N</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">for</span><span class="o">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span><span class="n">j</span><span class="o">&lt;</span><span class="no">M</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">dfs</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">))</span> <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">dfs</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">col</span><span class="o">,</span> <span class="kt">int</span> <span class="n">prev</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">k</span><span class="o">&lt;</span><span class="mi">4</span><span class="o">;</span> <span class="n">k</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">k</span> <span class="o">==</span> <span class="n">prev</span><span class="o">)</span> <span class="k">continue</span><span class="o">;</span>
+			<span class="kt">int</span> <span class="n">nr</span> <span class="o">=</span> <span class="n">row</span> <span class="o">+</span> <span class="n">dr</span><span class="o">[</span><span class="n">k</span><span class="o">];</span>
+			<span class="kt">int</span> <span class="n">nc</span> <span class="o">=</span> <span class="n">col</span> <span class="o">+</span> <span class="n">dc</span><span class="o">[</span><span class="n">k</span><span class="o">];</span>
+			<span class="k">if</span><span class="o">(!</span><span class="n">inside</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">))</span> <span class="k">continue</span><span class="o">;</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">color</span><span class="o">[</span><span class="n">row</span><span class="o">][</span><span class="n">col</span><span class="o">]</span> <span class="o">==</span> <span class="n">color</span><span class="o">[</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">])</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">visit</span><span class="o">[</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">])</span> <span class="k">continue</span><span class="o">;</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">nr</span> <span class="o">==</span> <span class="n">i</span> <span class="o">&amp;&amp;</span> <span class="n">nc</span> <span class="o">==</span> <span class="n">j</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+				<span class="o">}</span>
+				<span class="n">visit</span><span class="o">[</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">dfs</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">,</span> <span class="o">(</span><span class="n">k</span><span class="o">+</span><span class="mi">2</span><span class="o">)%</span><span class="mi">4</span><span class="o">))</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+				<span class="n">visit</span><span class="o">[</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">inside</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">col</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="n">row</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">col</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="no">N</span> <span class="o">&amp;&amp;</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="no">M</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

@@ -1,0 +1,134 @@
+I"~S<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/2151">백준 - 거울 설치</a></p>
+
+<hr />
+<h2 id="설명">설명</h2>
+<p>거울은 양면으로 만들어져있고, 거울을 45도로 배치할 수 있다. 거울을 이용해 한쪽 문에서 다른쪽 문을 볼 수 있게 하려면 몇개의 거울이 필요한지 구하는 문제다. 거울을 놓을 수 있는 자리는 ‘!’로 주어진다.</p>
+
+<hr />
+<h2 id="풀이">풀이</h2>
+
+<p>만약 이동 방향이 상, 하라면 거울을 만났을 때 좌, 우로 이동할 수 있다. 그리고 이동 방향이 좌, 우라면 거울을 만났을 때 상, 하로 이동할 수 있다. 따라서 visit[이동방향][가로위치][세로위치] 배열을 만들어 현재 상태를 저장하였다.</p>
+
+<p>만약 이동하는 도중 거울을 만나면 해당 위치와 이동 정보를 큐에 저장한다. 그리고 이 과정을 벽을 만날때까지 반복한다. 그러면 다음 사이클의 큐에는 거울이 1개 추가된 상태만 기록될 것이고, 최소 거울의 개수를 구할 수 있다.</p>
+
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+	
+	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Pos</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">;</span>
+		<span class="kt">boolean</span> <span class="n">ver</span><span class="o">,</span> <span class="n">hor</span><span class="o">;</span>
+		<span class="kd">public</span> <span class="nf">Pos</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">col</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">ver</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">hor</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">row</span> <span class="o">=</span> <span class="n">row</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">col</span> <span class="o">=</span> <span class="n">col</span><span class="o">;</span> 
+			<span class="k">this</span><span class="o">.</span><span class="na">ver</span> <span class="o">=</span> <span class="n">ver</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">hor</span> <span class="o">=</span> <span class="n">hor</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	
+	<span class="kd">static</span> <span class="kt">int</span> <span class="n">n</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">char</span><span class="o">[][]</span> <span class="n">map</span><span class="o">;</span>
+	
+	<span class="kd">static</span> <span class="nc">Pos</span> <span class="n">start</span><span class="o">,</span> <span class="n">end</span><span class="o">;</span>
+
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">INF</span> <span class="o">=</span> <span class="mi">987654321</span><span class="o">;</span>
+	
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">dr</span> <span class="o">=</span> <span class="o">{-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">};</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">dc</span> <span class="o">=</span> <span class="o">{</span><span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">};</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">BufferedReader</span> <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+		<span class="n">n</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+		<span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span><span class="o">[</span><span class="n">n</span><span class="o">][</span><span class="n">n</span><span class="o">];</span>
+		<span class="n">start</span> <span class="o">=</span> <span class="n">end</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">map</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">().</span><span class="na">toCharArray</span><span class="o">();</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">n</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">map</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">==</span> <span class="sc">'#'</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">if</span><span class="o">(</span><span class="n">start</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+						<span class="n">start</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Pos</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+					<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+						<span class="n">end</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Pos</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="kc">true</span><span class="o">);</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bfs</span><span class="o">());</span>
+		<span class="n">br</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">bfs</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">Queue</span><span class="o">&lt;</span><span class="nc">Pos</span><span class="o">&gt;</span> <span class="n">q</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedList</span><span class="o">&lt;&gt;();</span>
+		<span class="kt">int</span><span class="o">[][][]</span> <span class="n">time</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">2</span><span class="o">][</span><span class="n">n</span><span class="o">][</span><span class="n">n</span><span class="o">];</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">n</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="nc">Arrays</span><span class="o">.</span><span class="na">fill</span><span class="o">(</span><span class="n">time</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">],</span> <span class="no">INF</span><span class="o">);</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		
+		<span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">start</span><span class="o">);</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">time</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">start</span><span class="o">.</span><span class="na">row</span><span class="o">][</span><span class="n">start</span><span class="o">.</span><span class="na">col</span><span class="o">]=</span> <span class="mi">0</span><span class="o">;</span> 
+		<span class="o">}</span>
+		
+		<span class="kt">int</span> <span class="n">curTime</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="k">while</span><span class="o">(!</span><span class="n">q</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+			<span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+			<span class="k">while</span><span class="o">(</span><span class="n">size</span><span class="o">--</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+				<span class="nc">Pos</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">cur</span><span class="o">.</span><span class="na">ver</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">2</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+						<span class="kt">int</span> <span class="n">nr</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="na">row</span> <span class="o">+</span> <span class="n">dr</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+						<span class="kt">int</span> <span class="n">nc</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="na">col</span> <span class="o">+</span> <span class="n">dc</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+						<span class="k">while</span><span class="o">(</span><span class="n">inside</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">map</span><span class="o">[</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">]</span> <span class="o">!=</span> <span class="sc">'*'</span><span class="o">)</span> <span class="o">{</span>
+							<span class="k">if</span><span class="o">(</span><span class="n">nr</span> <span class="o">==</span> <span class="n">end</span><span class="o">.</span><span class="na">row</span> <span class="o">&amp;&amp;</span> <span class="n">nc</span> <span class="o">==</span> <span class="n">end</span><span class="o">.</span><span class="na">col</span><span class="o">)</span> <span class="o">{</span>
+								<span class="k">return</span> <span class="n">curTime</span><span class="o">;</span> 
+							<span class="o">}</span>
+							<span class="k">if</span><span class="o">(</span><span class="n">curTime</span> <span class="o">&gt;=</span> <span class="n">time</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">])</span> <span class="o">{</span>
+								<span class="k">break</span><span class="o">;</span>
+							<span class="o">}</span>
+							<span class="k">if</span><span class="o">(</span><span class="n">map</span><span class="o">[</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">]</span> <span class="o">==</span> <span class="sc">'!'</span><span class="o">)</span> <span class="o">{</span>
+								<span class="n">time</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">]</span> <span class="o">=</span> <span class="n">curTime</span><span class="o">;</span>
+								<span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="k">new</span> <span class="nc">Pos</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">,</span> <span class="kc">false</span><span class="o">,</span> <span class="kc">true</span><span class="o">));</span>
+							<span class="o">}</span>
+							<span class="n">nr</span> <span class="o">+=</span> <span class="n">dr</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+							<span class="n">nc</span> <span class="o">+=</span> <span class="n">dc</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+						<span class="o">}</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">cur</span><span class="o">.</span><span class="na">hor</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">2</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+						<span class="kt">int</span> <span class="n">nr</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="na">row</span> <span class="o">+</span> <span class="n">dr</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+						<span class="kt">int</span> <span class="n">nc</span> <span class="o">=</span> <span class="n">cur</span><span class="o">.</span><span class="na">col</span> <span class="o">+</span> <span class="n">dc</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+						<span class="k">while</span><span class="o">(</span><span class="n">inside</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">map</span><span class="o">[</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">]</span> <span class="o">!=</span> <span class="sc">'*'</span><span class="o">)</span> <span class="o">{</span>
+							<span class="k">if</span><span class="o">(</span><span class="n">nr</span> <span class="o">==</span> <span class="n">end</span><span class="o">.</span><span class="na">row</span> <span class="o">&amp;&amp;</span> <span class="n">nc</span> <span class="o">==</span> <span class="n">end</span><span class="o">.</span><span class="na">col</span><span class="o">)</span> <span class="o">{</span>
+								<span class="k">return</span> <span class="n">curTime</span><span class="o">;</span>
+							<span class="o">}</span>
+							<span class="k">if</span><span class="o">(</span><span class="n">curTime</span> <span class="o">&gt;=</span> <span class="n">time</span><span class="o">[</span><span class="mi">1</span><span class="o">][</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">])</span> <span class="o">{</span>
+								<span class="k">break</span><span class="o">;</span>
+							<span class="o">}</span>
+							<span class="k">if</span><span class="o">(</span><span class="n">map</span><span class="o">[</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">]</span> <span class="o">==</span> <span class="sc">'!'</span><span class="o">)</span> <span class="o">{</span>
+								<span class="n">time</span><span class="o">[</span><span class="mi">1</span><span class="o">][</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">]</span> <span class="o">=</span> <span class="n">curTime</span><span class="o">;</span>
+								<span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="k">new</span> <span class="nc">Pos</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">,</span> <span class="kc">true</span><span class="o">,</span> <span class="kc">false</span><span class="o">));</span>
+							<span class="o">}</span>
+							<span class="n">nr</span> <span class="o">+=</span> <span class="n">dr</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+							<span class="n">nc</span> <span class="o">+=</span> <span class="n">dc</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+						<span class="o">}</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+			<span class="n">curTime</span><span class="o">++;</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">inside</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">col</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="n">row</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">col</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">&amp;&amp;</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+:ET

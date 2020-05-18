@@ -1,0 +1,52 @@
+I"�<h2 id="문제">문제</h2>
+<p><a href="https://programmers.co.kr/learn/challenges">프로그래머스</a></p>
+
+<hr />
+<h2 id="풀이">풀이</h2>
+<p>중괄호 문자를 모두 공백문자로 대체한다. StringTokenizer를 이용하여 콤마로 토큰을 구분하면 숫자만 남게 된다. 남은 숫자들의 개수를 세고, 개수대로 정렬을 하면 정답을 얻을 수 있다.</p>
+
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+<span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Pair</span> <span class="kd">implements</span> <span class="nc">Comparable</span><span class="o">&lt;</span><span class="nc">Pair</span><span class="o">&gt;</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">val</span><span class="o">,</span> <span class="n">cnt</span><span class="o">;</span>
+		<span class="kd">public</span> <span class="nf">Pair</span><span class="o">(</span><span class="kt">int</span> <span class="n">val</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cnt</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">cnt</span> <span class="o">=</span> <span class="n">cnt</span><span class="o">;</span>
+		<span class="o">}</span>
+
+		<span class="nd">@Override</span>
+		<span class="kd">public</span> <span class="kt">int</span> <span class="nf">compareTo</span><span class="o">(</span><span class="nc">Pair</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">o</span><span class="o">.</span><span class="na">cnt</span><span class="o">,</span> <span class="n">cnt</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kt">int</span><span class="o">[]</span> <span class="nf">solution</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kt">int</span><span class="o">[]</span> <span class="n">count</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">100001</span><span class="o">];</span>
+		<span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="s">"{"</span><span class="o">,</span> <span class="s">""</span><span class="o">).</span><span class="na">replace</span><span class="o">(</span><span class="s">"}"</span><span class="o">,</span> <span class="s">""</span><span class="o">);</span>
+		<span class="nc">StringTokenizer</span> <span class="n">st</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringTokenizer</span><span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="s">","</span><span class="o">);</span>
+		<span class="kt">int</span> <span class="n">max</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="k">while</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">hasMoreTokens</span><span class="o">())</span> <span class="o">{</span>
+			<span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+			<span class="n">count</span><span class="o">[</span><span class="n">n</span><span class="o">]++;</span>
+			<span class="n">max</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">max</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
+		<span class="o">}</span>
+		
+		<span class="nc">PriorityQueue</span><span class="o">&lt;</span><span class="nc">Pair</span><span class="o">&gt;</span> <span class="n">pq</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">PriorityQueue</span><span class="o">&lt;&gt;();</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;=</span><span class="n">max</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">count</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">continue</span><span class="o">;</span>
+			<span class="n">pq</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="k">new</span> <span class="nc">Pair</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">count</span><span class="o">[</span><span class="n">i</span><span class="o">]));</span>
+		<span class="o">}</span>
+		
+		<span class="kt">int</span><span class="o">[]</span> <span class="n">answer</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">pq</span><span class="o">.</span><span class="na">size</span><span class="o">()];</span>
+		<span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="k">while</span><span class="o">(!</span><span class="n">pq</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+			<span class="n">answer</span><span class="o">[</span><span class="n">idx</span><span class="o">++]</span> <span class="o">=</span> <span class="n">pq</span><span class="o">.</span><span class="na">poll</span><span class="o">().</span><span class="na">val</span><span class="o">;</span>
+		<span class="o">}</span>
+		
+		<span class="k">return</span> <span class="n">answer</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

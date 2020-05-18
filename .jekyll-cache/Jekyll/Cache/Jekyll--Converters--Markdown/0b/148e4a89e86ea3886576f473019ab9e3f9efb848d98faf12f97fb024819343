@@ -1,0 +1,52 @@
+I"U<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/2482">백준 - 색상환</a></p>
+
+<hr />
+<h2 id="설명">설명</h2>
+<p>색상환에 포함되는 색의 개수 N이 주어졌을때, 서로 인접하지 않는 K개의 색을 선택하는 경우의 수를 찾는 문제다.</p>
+
+<hr />
+<h2 id="풀이">풀이</h2>
+<p>다이나믹 프로그래밍을 이용해 풀 수 있는 문제다. 색상환은 원형으로 이루어져있기 때문에 처음 색과 마지막 색이 인접한다. 따라서 처음색을 선택한 경우와 그렇지 않은 경우로 나누어 문제를 해결해야한다.</p>
+
+<p>DP배열에는 현재까지 선택한 색의 수와 현재 남은 색상환의 개수에 따른 최대값을 저장하여 문제를 풀이하였다.</p>
+
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+	
+	<span class="kd">static</span> <span class="kt">int</span> <span class="no">N</span><span class="o">,</span> <span class="no">K</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">int</span><span class="o">[][]</span> <span class="n">cache</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">MOD</span> <span class="o">=</span> <span class="mi">1_000_000_003</span><span class="o">;</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">Scanner</span> <span class="n">sc</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Scanner</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">);</span>
+		<span class="no">N</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">nextInt</span><span class="o">();</span>
+		<span class="no">K</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">nextInt</span><span class="o">();</span>
+		<span class="n">cache</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="no">K</span><span class="o">+</span><span class="mi">1</span><span class="o">][</span><span class="no">N</span><span class="o">];</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">K</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="nc">Arrays</span><span class="o">.</span><span class="na">fill</span><span class="o">(</span><span class="n">cache</span><span class="o">[</span><span class="n">i</span><span class="o">],</span> <span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="kt">int</span> <span class="n">answer</span> <span class="o">=</span> <span class="o">(</span><span class="n">dp</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="no">N</span><span class="o">-</span><span class="mi">2</span><span class="o">,</span> <span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="n">dp</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="no">N</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">))</span> <span class="o">%</span> <span class="no">MOD</span><span class="o">;</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">answer</span><span class="o">);</span>
+		<span class="n">sc</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">dp</span><span class="o">(</span><span class="kt">int</span> <span class="n">l</span><span class="o">,</span> <span class="kt">int</span> <span class="n">r</span><span class="o">,</span> <span class="kt">int</span> <span class="n">k</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">k</span> <span class="o">==</span> <span class="no">K</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">l</span> <span class="o">&gt;</span> <span class="n">r</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">cache</span><span class="o">[</span><span class="n">k</span><span class="o">][</span><span class="n">r</span><span class="o">-</span><span class="n">l</span><span class="o">]</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">cache</span><span class="o">[</span><span class="n">k</span><span class="o">][</span><span class="n">r</span><span class="o">-</span><span class="n">l</span><span class="o">];</span>
+		<span class="o">}</span>
+		<span class="n">cache</span><span class="o">[</span><span class="n">k</span><span class="o">][</span><span class="n">r</span><span class="o">-</span><span class="n">l</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="n">dp</span><span class="o">(</span><span class="n">l</span><span class="o">+</span><span class="mi">2</span><span class="o">,</span> <span class="n">r</span><span class="o">,</span> <span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="n">dp</span><span class="o">(</span><span class="n">l</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">r</span><span class="o">,</span> <span class="n">k</span><span class="o">))</span> <span class="o">%</span> <span class="no">MOD</span><span class="o">;</span>
+		<span class="k">return</span> <span class="n">cache</span><span class="o">[</span><span class="n">k</span><span class="o">][</span><span class="n">r</span><span class="o">-</span><span class="n">l</span><span class="o">];</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

@@ -1,0 +1,98 @@
+I"�0<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/1764">백준 - 듣보잡</a></p>
+
+<h2 id="풀이">풀이</h2>
+<p>두 가지의 풀이 방법이 가능하다.</p>
+
+<p>첫째, 배열을 모두 정렬하여 비교하여 풀이가 가능하다.</p>
+
+<p>둘째, 트라이 자료구조를 이용하여 풀이가 가능하다.</p>
+
+<p>최근 트라이 자료구조를 공부하였기 때문에 트라이를 이용하여 풀이를 진행하였다.</p>
+
+<p>새로 알게된 점은 자바에서 for-each 구문을 쓸 때 String to char array로 변환하는 것은 좋지 않다는 것이다.</p>
+
+<p>그 이유는 toCharArray 메서드는 새로운 객체를 반환하기 때문에 charAt 메서드를 통해 접근하는 것보다 메모리를 많이 차지하기 때문이다.</p>
+
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">SIZE</span> <span class="o">=</span> <span class="mi">26</span><span class="o">;</span>
+	
+	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Node</span> <span class="o">{</span>
+		<span class="nc">Node</span><span class="o">[]</span> <span class="n">next</span><span class="o">;</span>
+		<span class="kt">boolean</span> <span class="n">isEnd</span><span class="o">;</span>
+		<span class="kd">public</span> <span class="nf">Node</span><span class="o">()</span> <span class="o">{</span>
+			<span class="n">next</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Node</span><span class="o">[</span><span class="no">SIZE</span><span class="o">];</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	
+	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Trie</span> <span class="o">{</span>
+		<span class="nc">Node</span> <span class="n">root</span><span class="o">;</span>
+		<span class="kd">public</span> <span class="nf">Trie</span><span class="o">()</span> <span class="o">{</span>
+			<span class="n">root</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Node</span><span class="o">();</span>
+		<span class="o">}</span>
+		
+		<span class="kd">public</span> <span class="kt">void</span> <span class="nf">insert</span><span class="o">(</span><span class="nc">String</span> <span class="n">word</span><span class="o">)</span> <span class="o">{</span>
+			<span class="nc">Node</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">root</span><span class="o">;</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">word</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">-</span> <span class="sc">'a'</span><span class="o">;</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">ptr</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">idx</span><span class="o">]</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+					<span class="nc">Node</span> <span class="n">node</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Node</span><span class="o">();</span>
+					<span class="n">ptr</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">idx</span><span class="o">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">;</span>
+					<span class="n">ptr</span> <span class="o">=</span> <span class="n">node</span><span class="o">;</span>
+				<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+					<span class="n">ptr</span> <span class="o">=</span> <span class="n">ptr</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">idx</span><span class="o">];</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+			<span class="n">ptr</span><span class="o">.</span><span class="na">isEnd</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="o">}</span>
+		
+		<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">search</span><span class="o">(</span><span class="nc">String</span> <span class="n">word</span><span class="o">)</span> <span class="o">{</span>
+			<span class="nc">Node</span> <span class="n">ptr</span> <span class="o">=</span> <span class="n">root</span><span class="o">;</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">word</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">word</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">-</span> <span class="sc">'a'</span><span class="o">;</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">ptr</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">idx</span><span class="o">]</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+				<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+					<span class="n">ptr</span> <span class="o">=</span> <span class="n">ptr</span><span class="o">.</span><span class="na">next</span><span class="o">[</span><span class="n">idx</span><span class="o">];</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+			<span class="k">return</span> <span class="n">ptr</span><span class="o">.</span><span class="na">isEnd</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	
+	<span class="kd">static</span> <span class="kt">int</span> <span class="no">N</span><span class="o">,</span> <span class="no">M</span><span class="o">;</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">BufferedReader</span> <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+		<span class="nc">StringTokenizer</span> <span class="n">st</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringTokenizer</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+		<span class="no">N</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+		<span class="no">M</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+		<span class="nc">Trie</span> <span class="n">trie</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Trie</span><span class="o">();</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="nc">String</span> <span class="n">word</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">();</span>
+			<span class="n">trie</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="n">word</span><span class="o">);</span>
+		<span class="o">}</span>
+		
+		<span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">M</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="nc">String</span> <span class="n">word</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">();</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">trie</span><span class="o">.</span><span class="na">search</span><span class="o">(</span><span class="n">word</span><span class="o">))</span> <span class="o">{</span>
+				<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">word</span><span class="o">);</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+
+		<span class="nc">Collections</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">list</span><span class="o">);</span>
+		<span class="nc">StringBuilder</span> <span class="n">ans</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">(</span><span class="mi">102400</span><span class="o">);</span>
+		<span class="n">ans</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="na">size</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+		<span class="k">for</span><span class="o">(</span><span class="nc">String</span> <span class="nl">word:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">ans</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">word</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">ans</span><span class="o">);</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+:ET

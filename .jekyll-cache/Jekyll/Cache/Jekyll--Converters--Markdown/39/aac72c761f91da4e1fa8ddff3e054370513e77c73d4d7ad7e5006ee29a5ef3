@@ -1,0 +1,66 @@
+I"�&<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/2098">백준 - 외판원 순회</a></p>
+
+<h2 id="풀이">풀이</h2>
+<p>모든 노드를 최단거리로 순회하는 문제다.</p>
+
+<p>해당 문제는 동적 프로그래밍을 이용해 풀이가 가능하다.</p>
+
+<p>cache 배열의 인덱스는 다음을 가리킨다. [visit_information][current_position]</p>
+
+<p>현재까지 방문한 지점과 현재 위치를 기준으로 다음에 방문해야할 곳의 거리의 최소값을 저장하여 문제를 해결할 수 있다.</p>
+
+<p>항상 순회 가능한 경우만 주어지고, 출발지점과 도착지점이 같기 때문에 출발 위치는 중요하지 않다. 예를들어 아래의 순회는 시작지점이 다르지만 순회 경로가 동일하기 때문에 동일한 거리이다.</p>
+
+<ul>
+  <li>1 &gt; 2 &gt; 3 &gt; 4 &gt; 5 &gt; 1</li>
+  <li>2 &gt; 3 &gt; 4 &gt; 5 &gt; 1 &gt; 2</li>
+</ul>
+
+<h2 id="코드">코드</h2>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+	<span class="kd">static</span> <span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">ans</span><span class="o">,</span> <span class="n">start</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">int</span><span class="o">[][]</span> <span class="n">cost</span><span class="o">,</span> <span class="n">cache</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">INF</span> <span class="o">=</span> <span class="mi">987654321</span><span class="o">;</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">BufferedReader</span> <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+		<span class="n">n</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+		<span class="n">cost</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">][</span><span class="n">n</span><span class="o">];</span>
+		<span class="n">cache</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">n</span><span class="o">][</span><span class="n">n</span><span class="o">];</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="nc">StringTokenizer</span> <span class="n">st</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringTokenizer</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">n</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">cost</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="n">ans</span> <span class="o">=</span> <span class="no">INF</span><span class="o">;</span>
+        <span class="n">dp</span><span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">start</span><span class="o">,</span> <span class="n">start</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">dp</span><span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">start</span><span class="o">,</span> <span class="n">start</span><span class="o">));</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">dp</span><span class="o">(</span><span class="kt">int</span> <span class="n">mask</span><span class="o">,</span> <span class="kt">int</span> <span class="n">curr</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">mask</span> <span class="o">==</span> <span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">n</span><span class="o">)</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">cost</span><span class="o">[</span><span class="n">curr</span><span class="o">][</span><span class="n">start</span><span class="o">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="n">cost</span><span class="o">[</span><span class="n">curr</span><span class="o">][</span><span class="n">start</span><span class="o">];</span>
+			<span class="o">}</span>
+			<span class="k">return</span> <span class="no">INF</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">cache</span><span class="o">[</span><span class="n">mask</span><span class="o">][</span><span class="n">curr</span><span class="o">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="n">cache</span><span class="o">[</span><span class="n">mask</span><span class="o">][</span><span class="n">curr</span><span class="o">];</span>
+		<span class="o">}</span>
+		<span class="n">cache</span><span class="o">[</span><span class="n">mask</span><span class="o">][</span><span class="n">curr</span><span class="o">]</span> <span class="o">=</span> <span class="no">INF</span><span class="o">;</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">next</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">next</span><span class="o">&lt;</span><span class="n">n</span><span class="o">;</span> <span class="n">next</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">((</span><span class="n">mask</span> <span class="o">&amp;</span> <span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">next</span><span class="o">))</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">cost</span><span class="o">[</span><span class="n">curr</span><span class="o">][</span><span class="n">next</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">cache</span><span class="o">[</span><span class="n">mask</span><span class="o">][</span><span class="n">curr</span><span class="o">]</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">cache</span><span class="o">[</span><span class="n">mask</span><span class="o">][</span><span class="n">curr</span><span class="o">],</span> <span class="n">dp</span><span class="o">(</span><span class="n">mask</span> <span class="o">|</span> <span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">next</span><span class="o">),</span> <span class="n">next</span><span class="o">)</span> <span class="o">+</span> <span class="n">cost</span><span class="o">[</span><span class="n">curr</span><span class="o">][</span><span class="n">next</span><span class="o">]);</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">cache</span><span class="o">[</span><span class="n">mask</span><span class="o">][</span><span class="n">curr</span><span class="o">];</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

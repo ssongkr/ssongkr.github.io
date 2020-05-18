@@ -1,0 +1,81 @@
+I"�'<h2 id="문제">문제</h2>
+<p><a href="https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AWS2h6AKBCoDFAVT&amp;categoryId=AWS2h6AKBCoDFAVT&amp;categoryType=CODE">SWEA - 의석이의 우뚝 선 산</a></p>
+
+<h2 id="풀이">풀이</h2>
+<p>높이가 증가했다가 낮아지는 구간이 몇개인지 구하는 문제다.</p>
+
+<p>우뚝 선 산을 찾기 위해 좌측에서 우측으로 이동했을 때 오름차순 구간의 길이를 저장했다.(LR배열) 그리고 우측에서 좌측으로 이동했을 때의 오름차순 구간의 길이를 저장했다.(RL배열) 요약하자면 다음과 같다.</p>
+
+<ul>
+  <li>LR[i] : i를 기준으로 좌측으로 이동했을 때 낮아지는 구간의 길이</li>
+  <li>RL[i] : i를 기준으로 우측으로 이동했을 때 낮아지는 구간의 길이</li>
+</ul>
+
+<p>만약 i-번째에서 LR[i]의 값과 RL[i]의 값이 모두 0보다 크다면 우뚝 선 산임을 의미한다.</p>
+
+<p>예를들어 높이가 <strong>1 2 3 4 5 4 3 2</strong>가 있다고 생각해보자.</p>
+
+<p>왼쪽에서 오른쪽으로 증가하는 구간의 길이는 <strong>0 1 2 3 4 5 0 0 0</strong>이 될 것이고, 
+오른쪽에서 왼쪽으로 증가하는 구간의 길이는 <strong>0 0 0 0 0 3 2 1 0</strong>이 될 것이다.</p>
+
+<p>두 배열을 곱하면 결과 값이 0 0 0 0 0 15 0 0 0이 될 것이다.</p>
+
+<p>따라서 우뚝 선 구간의 개수는 15개가 된다.</p>
+
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">Scanner</span> <span class="n">sc</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Scanner</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">);</span>
+		<span class="nc">StringBuilder</span> <span class="n">ans</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">();</span>
+		<span class="kt">int</span> <span class="n">tc</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">nextInt</span><span class="o">();</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">t</span><span class="o">=</span><span class="mi">1</span><span class="o">;</span> <span class="n">t</span><span class="o">&lt;=</span><span class="n">tc</span><span class="o">;</span> <span class="n">t</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">nextInt</span><span class="o">();</span>
+			<span class="kt">int</span><span class="o">[]</span> <span class="n">h</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">];</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">h</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">nextInt</span><span class="o">();</span>
+			<span class="o">}</span>
+			
+			<span class="kt">int</span><span class="o">[]</span> <span class="n">lr</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">];</span>
+			<span class="kt">int</span><span class="o">[]</span> <span class="n">rl</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">n</span><span class="o">];</span>
+			<span class="kt">int</span> <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="kt">int</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">h</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="kt">int</span> <span class="n">next</span> <span class="o">=</span> <span class="n">h</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">next</span> <span class="o">&gt;</span> <span class="n">cur</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">cur</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
+					<span class="n">cnt</span><span class="o">++;</span>
+				<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+					<span class="n">lr</span><span class="o">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">cnt</span><span class="o">;</span>
+					<span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+				<span class="o">}</span>
+				<span class="n">cur</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
+			<span class="o">}</span>
+			<span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="n">cur</span> <span class="o">=</span> <span class="n">h</span><span class="o">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">];</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="o">;</span> <span class="n">i</span><span class="o">&gt;=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">--)</span> <span class="o">{</span>
+				<span class="kt">int</span> <span class="n">next</span> <span class="o">=</span> <span class="n">h</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">next</span> <span class="o">&gt;</span> <span class="n">cur</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">cur</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
+					<span class="n">cnt</span><span class="o">++;</span>
+				<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+					<span class="n">rl</span><span class="o">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="n">cnt</span><span class="o">;</span>
+					<span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+				<span class="o">}</span>
+				<span class="n">cur</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
+			<span class="o">}</span>
+			<span class="kt">int</span> <span class="n">res</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="n">res</span> <span class="o">+=</span> <span class="n">lr</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">*</span> <span class="n">rl</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+			<span class="o">}</span>
+			<span class="n">ans</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"#"</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">t</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">" "</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="n">res</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">"\n"</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">ans</span><span class="o">);</span>
+		<span class="n">sc</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+
+</code></pre></div></div>
+:ET

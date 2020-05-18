@@ -1,0 +1,139 @@
+I"�f<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/1938">백준 - 통나무 옮기기</a></p>
+
+<hr />
+<h2 id="설명">설명</h2>
+<p>길이가 3인 통나무를 최소의 명령어를 이용하여 목적지에 옮기는 문제다.</p>
+
+<hr />
+<h2 id="풀이">풀이</h2>
+<p>통나무의 위치를 중앙 좌표와 방향을 이용하여 표현하였다. 이에따른 통나무의 회전 가능 여부와 다음 위치로 이동 가능 여부를 판단하여 문제를 풀이하였다.</p>
+
+<p>통나무를 옮길 수 있는지 확인하고 옮기는 것보다 통나무를 먼저 옮기고 유효한 위치인지 확인하는 것이 코드의 길이가 확연이 짧다.</p>
+
+<hr />
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+	
+	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Tree</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">,</span> <span class="n">dir</span><span class="o">,</span> <span class="n">cnt</span><span class="o">;</span>
+		<span class="kd">public</span> <span class="nf">Tree</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">col</span><span class="o">,</span> <span class="kt">int</span> <span class="n">dir</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cnt</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">row</span> <span class="o">=</span> <span class="n">row</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">col</span> <span class="o">=</span> <span class="n">col</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">dir</span> <span class="o">=</span> <span class="n">dir</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">cnt</span> <span class="o">=</span> <span class="n">cnt</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="nd">@Override</span>
+		<span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="nc">Object</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+			<span class="nc">Tree</span> <span class="n">t</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Tree</span><span class="o">)</span> <span class="n">obj</span><span class="o">;</span>
+			<span class="k">return</span> <span class="n">row</span> <span class="o">==</span> <span class="n">t</span><span class="o">.</span><span class="na">row</span> <span class="o">&amp;&amp;</span> <span class="n">col</span> <span class="o">==</span> <span class="n">t</span><span class="o">.</span><span class="na">col</span> <span class="o">&amp;&amp;</span> <span class="n">dir</span> <span class="o">==</span> <span class="n">t</span><span class="o">.</span><span class="na">dir</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	
+	<span class="kd">static</span> <span class="kt">int</span> <span class="no">N</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="nc">Tree</span> <span class="n">start</span><span class="o">,</span> <span class="n">end</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">char</span><span class="o">[][]</span> <span class="n">map</span><span class="o">;</span>
+	
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">VER</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">HOR</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+	
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">dr</span> <span class="o">=</span> <span class="o">{-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">};</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">dc</span> <span class="o">=</span> <span class="o">{</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">};</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">BufferedReader</span> <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+		<span class="no">N</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+		<span class="n">map</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span><span class="o">[</span><span class="no">N</span><span class="o">][</span><span class="no">N</span><span class="o">];</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">map</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">().</span><span class="na">toCharArray</span><span class="o">();</span>
+		<span class="o">}</span>
+		<span class="n">start</span> <span class="o">=</span> <span class="n">find</span><span class="o">(</span><span class="sc">'B'</span><span class="o">);</span>
+		<span class="n">end</span> <span class="o">=</span> <span class="n">find</span><span class="o">(</span><span class="sc">'E'</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">bfs</span><span class="o">());</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">bfs</span><span class="o">()</span> <span class="o">{</span>
+		<span class="nc">Queue</span><span class="o">&lt;</span><span class="nc">Tree</span><span class="o">&gt;</span> <span class="n">q</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedList</span><span class="o">&lt;&gt;();</span>
+		<span class="kt">boolean</span><span class="o">[][][]</span> <span class="n">visit</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="mi">2</span><span class="o">][</span><span class="no">N</span><span class="o">][</span><span class="no">N</span><span class="o">];</span>
+		<span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">start</span><span class="o">);</span>		
+		<span class="n">visit</span><span class="o">[</span><span class="n">start</span><span class="o">.</span><span class="na">dir</span><span class="o">][</span><span class="n">start</span><span class="o">.</span><span class="na">row</span><span class="o">][</span><span class="n">start</span><span class="o">.</span><span class="na">col</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span> 
+		
+		<span class="k">while</span><span class="o">(!</span><span class="n">q</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+			<span class="nc">Tree</span> <span class="n">ct</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="kt">int</span> <span class="n">nr</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="na">row</span> <span class="o">+</span> <span class="n">dr</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+				<span class="kt">int</span> <span class="n">nc</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="na">col</span> <span class="o">+</span> <span class="n">dc</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+				<span class="kt">int</span> <span class="n">nd</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="na">dir</span><span class="o">;</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">valid</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">,</span> <span class="n">nd</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">visit</span><span class="o">[</span><span class="n">nd</span><span class="o">][</span><span class="n">nr</span><span class="o">][</span><span class="n">nc</span><span class="o">])</span> <span class="o">{</span>
+					<span class="nc">Tree</span> <span class="n">nt</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Tree</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">,</span> <span class="n">nd</span><span class="o">,</span> <span class="n">ct</span><span class="o">.</span><span class="na">cnt</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+					<span class="k">if</span><span class="o">(</span><span class="n">nt</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">end</span><span class="o">))</span> <span class="o">{</span>
+						<span class="k">return</span> <span class="n">nt</span><span class="o">.</span><span class="na">cnt</span><span class="o">;</span>
+					<span class="o">}</span>
+					<span class="n">visit</span><span class="o">[</span><span class="n">nt</span><span class="o">.</span><span class="na">dir</span><span class="o">][</span><span class="n">nt</span><span class="o">.</span><span class="na">row</span><span class="o">][</span><span class="n">nt</span><span class="o">.</span><span class="na">col</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+					<span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">nt</span><span class="o">);</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+			<span class="nc">Tree</span> <span class="n">nt</span> <span class="o">=</span> <span class="n">rotate</span><span class="o">(</span><span class="n">ct</span><span class="o">);</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">nt</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">visit</span><span class="o">[</span><span class="n">nt</span><span class="o">.</span><span class="na">dir</span><span class="o">][</span><span class="n">nt</span><span class="o">.</span><span class="na">row</span><span class="o">][</span><span class="n">nt</span><span class="o">.</span><span class="na">col</span><span class="o">])</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">nt</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">end</span><span class="o">))</span> <span class="o">{</span>
+					<span class="k">return</span> <span class="n">nt</span><span class="o">.</span><span class="na">cnt</span><span class="o">;</span>
+				<span class="o">}</span>
+				<span class="n">visit</span><span class="o">[</span><span class="n">nt</span><span class="o">.</span><span class="na">dir</span><span class="o">][</span><span class="n">nt</span><span class="o">.</span><span class="na">row</span><span class="o">][</span><span class="n">nt</span><span class="o">.</span><span class="na">col</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+				<span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="n">nt</span><span class="o">);</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">valid</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">col</span><span class="o">,</span> <span class="kt">int</span> <span class="n">dir</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">dir</span> <span class="o">==</span> <span class="no">VER</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="nf">inside</span><span class="o">(</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">col</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">map</span><span class="o">[</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="o">][</span><span class="n">col</span><span class="o">]</span> <span class="o">!=</span> <span class="sc">'1'</span>
+				<span class="o">&amp;&amp;</span> <span class="n">inside</span><span class="o">(</span><span class="n">row</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">col</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">map</span><span class="o">[</span><span class="n">row</span><span class="o">-</span><span class="mi">1</span><span class="o">][</span><span class="n">col</span><span class="o">]</span> <span class="o">!=</span> <span class="sc">'1'</span>
+				<span class="o">&amp;&amp;</span> <span class="n">inside</span><span class="o">(</span><span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">map</span><span class="o">[</span><span class="n">row</span><span class="o">][</span><span class="n">col</span><span class="o">]</span> <span class="o">!=</span> <span class="sc">'1'</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="nf">inside</span><span class="o">(</span><span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">+</span><span class="mi">1</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">map</span><span class="o">[</span><span class="n">row</span><span class="o">][</span><span class="n">col</span><span class="o">+</span><span class="mi">1</span><span class="o">]</span> <span class="o">!=</span> <span class="sc">'1'</span>
+			<span class="o">&amp;&amp;</span> <span class="n">inside</span><span class="o">(</span><span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">map</span><span class="o">[</span><span class="n">row</span><span class="o">][</span><span class="n">col</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">!=</span> <span class="sc">'1'</span>
+			<span class="o">&amp;&amp;</span> <span class="n">inside</span><span class="o">(</span><span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">map</span><span class="o">[</span><span class="n">row</span><span class="o">][</span><span class="n">col</span><span class="o">]</span> <span class="o">!=</span> <span class="sc">'1'</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="nc">Tree</span> <span class="nf">rotate</span><span class="o">(</span><span class="nc">Tree</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kt">int</span><span class="o">[]</span> <span class="n">dx</span> <span class="o">=</span> <span class="o">{-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">};</span>
+		<span class="kt">int</span><span class="o">[]</span> <span class="n">dy</span> <span class="o">=</span> <span class="o">{-</span><span class="mi">1</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">};</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">dx</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="na">row</span> <span class="o">+</span> <span class="n">dx</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+			<span class="kt">int</span> <span class="n">col</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="na">col</span> <span class="o">+</span> <span class="n">dy</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">t</span><span class="o">.</span><span class="na">dir</span> <span class="o">==</span> <span class="no">HOR</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">row</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="na">row</span> <span class="o">+</span> <span class="n">dy</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+				<span class="n">col</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="na">col</span> <span class="o">+</span> <span class="n">dx</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+			<span class="o">}</span>
+			<span class="k">if</span><span class="o">(!</span><span class="n">inside</span><span class="o">(</span><span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">)</span> <span class="o">||</span> <span class="n">map</span><span class="o">[</span><span class="n">row</span><span class="o">][</span><span class="n">col</span><span class="o">]</span> <span class="o">==</span> <span class="sc">'1'</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="k">new</span> <span class="nf">Tree</span><span class="o">(</span><span class="n">t</span><span class="o">.</span><span class="na">row</span><span class="o">,</span> <span class="n">t</span><span class="o">.</span><span class="na">col</span><span class="o">,</span> <span class="o">(</span><span class="n">t</span><span class="o">.</span><span class="na">dir</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">%</span> <span class="mi">2</span><span class="o">,</span> <span class="n">t</span><span class="o">.</span><span class="na">cnt</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="nc">Tree</span> <span class="nf">find</span><span class="o">(</span><span class="kt">char</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="no">N</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">map</span><span class="o">[</span><span class="n">i</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">==</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">if</span><span class="o">(</span><span class="n">inside</span><span class="o">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">j</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">map</span><span class="o">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">][</span><span class="n">j</span><span class="o">]</span> <span class="o">==</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+						<span class="k">return</span> <span class="k">new</span> <span class="nf">Tree</span><span class="o">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="no">VER</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+					<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+						<span class="k">return</span> <span class="k">new</span> <span class="nf">Tree</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="no">HOR</span><span class="o">,</span> <span class="mi">0</span><span class="o">);</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">inside</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">col</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="n">row</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">col</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="no">N</span> <span class="o">&amp;&amp;</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="no">N</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

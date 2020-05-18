@@ -1,0 +1,107 @@
+I"�R<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/17825">백준 - 주사위 윷놀이</a></p>
+
+<h2 id="풀이">풀이</h2>
+<p>문제 자체는 어렵지 않다. 하지만 디버깅이 매우 어렵고, 높은 구현력을 요구로 한다. 디버깅이 매우 어려운 문제이기 때문에 완성도 높은 설계를 필요로하는 문제다.</p>
+
+<p>가능한 경로가 네 가지이므로 모든 경우를 따져 문제를 풀이하였다. 문제의 핵심은 동일한 위치에 말이 있을때 visit을 정확하게 체크하는 것이다.</p>
+
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Pos</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">type</span><span class="o">,</span> <span class="n">pos</span><span class="o">;</span>
+		<span class="kd">public</span> <span class="nf">Pos</span><span class="o">()</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">type</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">pos</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	
+	<span class="kd">static</span> <span class="kt">int</span> <span class="n">ans</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">step</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">order</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">int</span><span class="o">[][]</span> <span class="n">board</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">N</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">SIZE</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">StringTokenizer</span> <span class="n">st</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringTokenizer</span><span class="o">(</span><span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">)).</span><span class="na">readLine</span><span class="o">());</span>
+		<span class="n">step</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="no">SIZE</span><span class="o">];</span>
+		<span class="n">order</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="no">SIZE</span><span class="o">];</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">SIZE</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">step</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+		<span class="o">}</span>
+		<span class="n">initBoard</span><span class="o">();</span>
+		<span class="n">dfs</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ans</span><span class="o">);</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">dfs</span><span class="o">(</span><span class="kt">int</span> <span class="n">depth</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">depth</span> <span class="o">==</span> <span class="no">SIZE</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">ans</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">max</span><span class="o">(</span><span class="n">ans</span><span class="o">,</span> <span class="n">simulate</span><span class="o">());</span>
+			<span class="k">return</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">depth</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="no">N</span><span class="o">);</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">order</span><span class="o">[</span><span class="n">depth</span><span class="o">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
+			<span class="n">dfs</span><span class="o">(</span><span class="n">depth</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">simulate</span><span class="o">()</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="kt">boolean</span><span class="o">[][]</span> <span class="n">visit</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="mi">4</span><span class="o">][</span><span class="mi">41</span><span class="o">];</span>
+		<span class="nc">Pos</span><span class="o">[]</span> <span class="n">piece</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Pos</span><span class="o">[</span><span class="no">N</span><span class="o">];</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="n">piece</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Pos</span><span class="o">();</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">SIZE</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="nc">Pos</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">piece</span><span class="o">[</span><span class="n">order</span><span class="o">[</span><span class="n">i</span><span class="o">]];</span>
+			<span class="kt">int</span> <span class="n">num</span> <span class="o">=</span> <span class="n">board</span><span class="o">[</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span><span class="o">][</span><span class="n">cur</span><span class="o">.</span><span class="na">pos</span><span class="o">];</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">check</span><span class="o">(</span><span class="n">num</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!(</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span> <span class="o">==</span> <span class="mi">3</span> <span class="o">&amp;&amp;</span> <span class="n">cur</span><span class="o">.</span><span class="na">pos</span> <span class="o">==</span> <span class="mi">0</span><span class="o">))</span> <span class="o">{</span>
+				<span class="n">visit</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="n">num</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span> 
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+				<span class="n">visit</span><span class="o">[</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span><span class="o">][</span><span class="n">num</span><span class="o">]</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span> 
+			<span class="o">}</span>
+			
+			<span class="n">cur</span><span class="o">.</span><span class="na">pos</span> <span class="o">+=</span> <span class="n">step</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">cur</span><span class="o">.</span><span class="na">pos</span> <span class="o">&gt;=</span> <span class="n">board</span><span class="o">[</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span><span class="o">].</span><span class="na">length</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// is destination?</span>
+				<span class="n">cur</span><span class="o">.</span><span class="na">pos</span> <span class="o">=</span> <span class="n">board</span><span class="o">[</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span><span class="o">].</span><span class="na">length</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">switch</span><span class="o">(</span><span class="n">board</span><span class="o">[</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span><span class="o">][</span><span class="n">cur</span><span class="o">.</span><span class="na">pos</span><span class="o">])</span> <span class="o">{</span>
+					<span class="k">case</span> <span class="mi">10</span><span class="o">:</span> <span class="n">cur</span><span class="o">.</span><span class="na">type</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">cur</span><span class="o">.</span><span class="na">pos</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="k">break</span><span class="o">;</span>
+					<span class="k">case</span> <span class="mi">20</span><span class="o">:</span> <span class="n">cur</span><span class="o">.</span><span class="na">type</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span> <span class="n">cur</span><span class="o">.</span><span class="na">pos</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="k">break</span><span class="o">;</span>
+					<span class="k">case</span> <span class="mi">30</span><span class="o">:</span> <span class="n">cur</span><span class="o">.</span><span class="na">type</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span> <span class="n">cur</span><span class="o">.</span><span class="na">pos</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="k">break</span><span class="o">;</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+				<span class="n">num</span> <span class="o">=</span> <span class="n">board</span><span class="o">[</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span><span class="o">][</span><span class="n">cur</span><span class="o">.</span><span class="na">pos</span><span class="o">];</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">check</span><span class="o">(</span><span class="n">num</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!(</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span> <span class="o">==</span> <span class="mi">3</span> <span class="o">&amp;&amp;</span> <span class="n">cur</span><span class="o">.</span><span class="na">pos</span> <span class="o">==</span> <span class="mi">0</span><span class="o">))</span> <span class="o">{</span>
+					<span class="k">if</span><span class="o">(</span><span class="n">visit</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="n">num</span><span class="o">])</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span> 
+				<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+					<span class="k">if</span><span class="o">(</span><span class="n">visit</span><span class="o">[</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span><span class="o">][</span><span class="n">num</span><span class="o">])</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+				<span class="o">}</span>
+				
+				<span class="k">if</span><span class="o">(</span><span class="n">check</span><span class="o">(</span><span class="n">num</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!(</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span> <span class="o">==</span> <span class="mi">3</span> <span class="o">&amp;&amp;</span> <span class="n">cur</span><span class="o">.</span><span class="na">pos</span> <span class="o">==</span> <span class="mi">0</span><span class="o">))</span> <span class="o">{</span>
+					<span class="n">visit</span><span class="o">[</span><span class="mi">0</span><span class="o">][</span><span class="n">num</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span> 
+				<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+					<span class="n">visit</span><span class="o">[</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span><span class="o">][</span><span class="n">num</span><span class="o">]=</span> <span class="kc">true</span><span class="o">;</span> 
+				<span class="o">}</span>
+				<span class="n">ret</span> <span class="o">+=</span> <span class="n">board</span><span class="o">[</span><span class="n">cur</span><span class="o">.</span><span class="na">type</span><span class="o">][</span><span class="n">cur</span><span class="o">.</span><span class="na">pos</span><span class="o">];</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">ret</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">check</span><span class="o">(</span><span class="kt">int</span> <span class="n">k</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="o">(</span><span class="n">k</span> <span class="o">==</span> <span class="mi">25</span> <span class="o">||</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">30</span> <span class="o">||</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">35</span> <span class="o">||</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">40</span><span class="o">);</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">initBoard</span><span class="o">()</span> <span class="o">{</span>
+		<span class="n">board</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">4</span><span class="o">][];</span>
+		<span class="n">board</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">8</span><span class="o">,</span> <span class="mi">10</span><span class="o">,</span> <span class="mi">12</span><span class="o">,</span> <span class="mi">14</span><span class="o">,</span> <span class="mi">16</span><span class="o">,</span> <span class="mi">18</span><span class="o">,</span> <span class="mi">20</span><span class="o">,</span> <span class="mi">22</span><span class="o">,</span> <span class="mi">24</span><span class="o">,</span> <span class="mi">26</span><span class="o">,</span> <span class="mi">28</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">32</span><span class="o">,</span> <span class="mi">34</span><span class="o">,</span> <span class="mi">36</span><span class="o">,</span> <span class="mi">38</span><span class="o">,</span> <span class="mi">40</span><span class="o">,</span> <span class="mi">0</span> <span class="o">};</span>
+		<span class="n">board</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="mi">10</span><span class="o">,</span> <span class="mi">13</span><span class="o">,</span> <span class="mi">16</span><span class="o">,</span> <span class="mi">19</span><span class="o">,</span> <span class="mi">25</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">35</span><span class="o">,</span> <span class="mi">40</span><span class="o">,</span> <span class="mi">0</span> <span class="o">};</span>
+		<span class="n">board</span><span class="o">[</span><span class="mi">2</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="mi">20</span><span class="o">,</span> <span class="mi">22</span><span class="o">,</span> <span class="mi">24</span><span class="o">,</span> <span class="mi">25</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">35</span><span class="o">,</span> <span class="mi">40</span><span class="o">,</span> <span class="mi">0</span> <span class="o">};</span>
+		<span class="n">board</span><span class="o">[</span><span class="mi">3</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">28</span><span class="o">,</span> <span class="mi">27</span><span class="o">,</span> <span class="mi">26</span><span class="o">,</span> <span class="mi">25</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">35</span><span class="o">,</span> <span class="mi">40</span><span class="o">,</span> <span class="mi">0</span><span class="o">};</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

@@ -1,0 +1,92 @@
+I"�4<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/14238">백준 - 최솟값</a></p>
+
+<h2 id="풀이">풀이</h2>
+<p>깊이우선탐색(DFS)에 메모이제이션 기법을 적용하여 문제를 풀었다.</p>
+
+<p>우선 A, B, C의 개수를 카운팅했다. 그리고 깊이우선탐색을 통해 출근부를 만들 수 있는지 확인했다. 하지만 이 방식만 사용하면 시간초과가 발생한다. 그 이유는 수 많은 중복이 발생하기 때문이다.</p>
+
+<p>중복 방문을 없애기 위해 visit 배열을 이용하였다. 배열의 내용은 다음과 같다.</p>
+
+<p>visit[어제 출근한 사람][오늘 출근한 사람][A의 남아있는 출근 일수][B의 남아있는 출근 일수][C의 남아있는 출근 일수]</p>
+
+<p>visit 배열의 내용은 위에 있는 정보로 출근부를 만들 수 없다면 더 이상 검색하지 않겠다는 의미다.</p>
+
+<p>실수했던 점은 전날 출근한 사람을 고려하지 않았던 것이다. C는 전날과 전전날을 고려해서 출근부에 넣어야하기 때문에 전날 출근한 사람도 확인해야한다.</p>
+
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+	<span class="kd">static</span> <span class="kt">int</span> <span class="n">n</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">count</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">char</span><span class="o">[]</span> <span class="n">order</span><span class="o">;</span>
+	
+	<span class="kd">static</span> <span class="kt">boolean</span> <span class="n">visit</span><span class="o">[][][][][];</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">String</span> <span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">)).</span><span class="na">readLine</span><span class="o">();</span>
+		<span class="n">n</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">();</span>
+		<span class="n">count</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="mi">3</span><span class="o">];</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">count</span><span class="o">[</span><span class="n">s</span><span class="o">.</span><span class="na">charAt</span><span class="o">(</span><span class="n">i</span><span class="o">)</span> <span class="o">-</span> <span class="sc">'A'</span><span class="o">]++;</span>
+		<span class="o">}</span>
+		
+		<span class="n">visit</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="mi">3</span><span class="o">][</span><span class="mi">3</span><span class="o">][</span><span class="mi">50</span><span class="o">][</span><span class="mi">50</span><span class="o">][</span><span class="mi">50</span><span class="o">];</span>
+		<span class="n">order</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span><span class="o">[</span><span class="n">n</span><span class="o">];</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">count</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="k">continue</span><span class="o">;</span>
+			<span class="n">count</span><span class="o">[</span><span class="n">i</span><span class="o">]--;</span>
+			<span class="n">order</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">char</span><span class="o">)(</span><span class="sc">'A'</span> <span class="o">+</span> <span class="n">i</span><span class="o">);</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">dp</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="mi">0</span><span class="o">))</span> <span class="o">{</span>
+				<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">order</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+				<span class="k">return</span><span class="o">;</span>
+			<span class="o">}</span>
+			<span class="n">count</span><span class="o">[</span><span class="n">i</span><span class="o">]++;</span>
+		<span class="o">}</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"-1"</span><span class="o">);</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">dp</span><span class="o">(</span><span class="kt">int</span> <span class="n">depth</span><span class="o">,</span> <span class="kt">int</span> <span class="n">person</span><span class="o">,</span> <span class="kt">int</span> <span class="n">prev</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">visit</span><span class="o">[</span><span class="n">prev</span><span class="o">][</span><span class="n">person</span><span class="o">][</span><span class="n">count</span><span class="o">[</span><span class="mi">0</span><span class="o">]][</span><span class="n">count</span><span class="o">[</span><span class="mi">1</span><span class="o">]][</span><span class="n">count</span><span class="o">[</span><span class="mi">2</span><span class="o">]])</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">n</span> <span class="o">==</span> <span class="n">depth</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="o">}</span>
+		
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(!</span><span class="n">possible</span><span class="o">(</span><span class="n">depth</span><span class="o">,</span> <span class="n">i</span><span class="o">))</span> <span class="k">continue</span><span class="o">;</span>
+			<span class="n">count</span><span class="o">[</span><span class="n">i</span><span class="o">]--;</span>
+			<span class="n">order</span><span class="o">[</span><span class="n">depth</span><span class="o">]</span> <span class="o">=</span> <span class="o">(</span><span class="kt">char</span><span class="o">)(</span><span class="sc">'A'</span> <span class="o">+</span> <span class="n">i</span><span class="o">);</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">dp</span><span class="o">(</span><span class="n">depth</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">person</span><span class="o">))</span> <span class="o">{</span>
+				<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">order</span><span class="o">[</span><span class="n">depth</span><span class="o">]);</span>
+				<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+			<span class="o">}</span>
+			<span class="n">count</span><span class="o">[</span><span class="n">i</span><span class="o">]++;</span>
+			<span class="n">visit</span><span class="o">[</span><span class="n">prev</span><span class="o">][</span><span class="n">person</span><span class="o">][</span><span class="n">count</span><span class="o">[</span><span class="mi">0</span><span class="o">]][</span><span class="n">count</span><span class="o">[</span><span class="mi">1</span><span class="o">]][</span><span class="n">count</span><span class="o">[</span><span class="mi">2</span><span class="o">]]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">possible</span><span class="o">(</span><span class="kt">int</span> <span class="n">idx</span><span class="o">,</span> <span class="kt">int</span> <span class="n">ci</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">count</span><span class="o">[</span><span class="n">ci</span><span class="o">]</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">ci</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">idx</span><span class="o">-</span><span class="mi">1</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">order</span><span class="o">[</span><span class="n">idx</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">==</span> <span class="sc">'B'</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">}</span> <span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">ci</span> <span class="o">==</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">idx</span><span class="o">-</span><span class="mi">1</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">order</span><span class="o">[</span><span class="n">idx</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">==</span> <span class="sc">'C'</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+			<span class="o">}</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">idx</span><span class="o">-</span><span class="mi">2</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">order</span><span class="o">[</span><span class="n">idx</span><span class="o">-</span><span class="mi">2</span><span class="o">]</span> <span class="o">==</span> <span class="sc">'C'</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

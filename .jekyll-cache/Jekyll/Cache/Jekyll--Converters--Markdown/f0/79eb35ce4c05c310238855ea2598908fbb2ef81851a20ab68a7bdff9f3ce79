@@ -1,0 +1,62 @@
+I"�<h2 id="문제">문제</h2>
+<p><a href="https://programmers.co.kr/learn/courses/30/lessons/42861">프로그래머스 - 섬 연결하기</a></p>
+
+<h2 id="풀이">풀이</h2>
+<p>최소 비용으로 모든 섬을 연결하는 문제이다.</p>
+
+<p>프림, 크루스칼 알고리즘을 이용하여 최소 스패닝 트리를 찾아 문제를 해결할 수 있다.</p>
+
+<h2 id="코드">코드</h2>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">UnionFindTree</span> <span class="o">{</span>
+    <span class="kt">int</span><span class="o">[]</span> <span class="n">parent</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">UnionFindTree</span><span class="o">(</span><span class="kt">int</span> <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="n">size</span><span class="o">];</span>
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">size</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="n">parent</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">i</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">find</span><span class="o">(</span><span class="kt">int</span> <span class="n">node</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">parent</span><span class="o">[</span><span class="n">node</span><span class="o">]</span> <span class="o">==</span> <span class="n">node</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">node</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">parent</span><span class="o">[</span><span class="n">node</span><span class="o">]</span> <span class="o">=</span> <span class="n">find</span><span class="o">(</span><span class="n">parent</span><span class="o">[</span><span class="n">node</span><span class="o">]);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">union</span><span class="o">(</span><span class="kt">int</span> <span class="n">node1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">node2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">root1</span> <span class="o">=</span> <span class="n">find</span><span class="o">(</span><span class="n">node1</span><span class="o">);</span>
+        <span class="kt">int</span> <span class="n">root2</span> <span class="o">=</span> <span class="n">find</span><span class="o">(</span><span class="n">node2</span><span class="o">);</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">root1</span> <span class="o">==</span> <span class="n">root2</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="n">parent</span><span class="o">[</span><span class="n">root2</span><span class="o">]</span> <span class="o">=</span> <span class="n">parent</span><span class="o">[</span><span class="n">root1</span><span class="o">];</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">solution</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="kt">int</span><span class="o">[][]</span> <span class="n">costs</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">ans</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="nc">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">costs</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Comparator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">[]&gt;()</span> <span class="o">{</span>
+			<span class="nd">@Override</span>
+			<span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">x</span><span class="o">,</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">x</span><span class="o">[</span><span class="mi">2</span><span class="o">],</span> <span class="n">y</span><span class="o">[</span><span class="mi">2</span><span class="o">]);</span>
+			<span class="o">}</span>
+		<span class="o">});</span>
+		
+		<span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="nc">UnionFindTree</span> <span class="n">uft</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">UnionFindTree</span><span class="o">(</span><span class="n">n</span><span class="o">);</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="nl">e:</span> <span class="n">costs</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">uft</span><span class="o">.</span><span class="na">union</span><span class="o">(</span><span class="n">e</span><span class="o">[</span><span class="mi">0</span><span class="o">],</span> <span class="n">e</span><span class="o">[</span><span class="mi">1</span><span class="o">]))</span> <span class="o">{</span>
+				<span class="n">ans</span> <span class="o">+=</span> <span class="n">e</span><span class="o">[</span><span class="mi">2</span><span class="o">];</span>
+				<span class="n">size</span><span class="o">++;</span>
+			<span class="o">}</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">size</span> <span class="o">==</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span> <span class="k">break</span><span class="o">;</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">ans</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

@@ -1,0 +1,83 @@
+I"�*<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/14226">백준 - 이모티콘</a></p>
+
+<hr />
+<h2 id="설명">설명</h2>
+<p>다음 세 가지 연산을 최소로 사용하여 숫자 S를 만드는 문제다.
+	1. 화면에 있는 이모티콘을 모두 복사해서 클립보드에 저장한다.
+	2. 클립보드에 있는 모든 이모티콘을 화면에 붙여넣기 한다.
+	3. 화면에 있는 이모티콘 중 하나를 삭제한다.</p>
+
+<hr />
+<h2 id="풀이">풀이</h2>
+<p>연산을 최소로 하여 정답을 구해야하기 때문에 BFS를 이용하여 문제를 풀이하였다. 단, visit 처리를 화면에 있는 이모티콘의 개수와 클립보드에 저장된 이모티콘 개수 두 가지를 기준으로 처리하였다.</p>
+
+<hr />
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+	
+	<span class="kd">static</span> <span class="kt">int</span> <span class="n">n</span><span class="o">;</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		<span class="nc">Scanner</span> <span class="n">sc</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Scanner</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">);</span>
+		<span class="n">n</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="na">nextInt</span><span class="o">();</span>
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">bfs</span><span class="o">(</span><span class="n">n</span><span class="o">));</span>
+		<span class="n">sc</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">bfs</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kt">boolean</span><span class="o">[][]</span> <span class="n">visit</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">boolean</span><span class="o">[</span><span class="n">n</span><span class="o">*</span><span class="mi">2</span><span class="o">][</span><span class="n">n</span><span class="o">*</span><span class="mi">2</span><span class="o">];</span>
+		<span class="n">visit</span><span class="o">[</span><span class="mi">1</span><span class="o">][</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+		<span class="nc">Queue</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">[]&gt;</span> <span class="n">q</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LinkedList</span><span class="o">&lt;&gt;();</span>
+		<span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">0</span> <span class="o">});</span>
+		<span class="kt">int</span> <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="k">while</span><span class="o">(!</span><span class="n">q</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+			<span class="n">time</span><span class="o">++;</span>
+			<span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+			<span class="k">while</span><span class="o">(</span><span class="n">size</span><span class="o">--</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+				<span class="kt">int</span><span class="o">[]</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">q</span><span class="o">.</span><span class="na">poll</span><span class="o">();</span>
+
+				<span class="kt">int</span> <span class="n">s</span> <span class="o">=</span> <span class="n">cur</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span>
+				<span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">cur</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">s</span> <span class="o">==</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">return</span> <span class="n">time</span><span class="o">;</span>
+				<span class="o">}</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">inside</span><span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">c</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">visit</span><span class="o">[</span><span class="n">s</span><span class="o">][</span><span class="n">c</span><span class="o">])</span> <span class="o">{</span>
+					<span class="n">visit</span><span class="o">[</span><span class="n">s</span><span class="o">][</span><span class="n">c</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+					<span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="n">s</span><span class="o">,</span> <span class="n">c</span> <span class="o">});</span>
+				<span class="o">}</span>
+				
+				<span class="n">s</span> <span class="o">=</span> <span class="n">cur</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+				<span class="n">c</span> <span class="o">=</span> <span class="n">cur</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">inside</span><span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">c</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">visit</span><span class="o">[</span><span class="n">s</span><span class="o">][</span><span class="n">c</span><span class="o">])</span> <span class="o">{</span>
+					<span class="n">visit</span><span class="o">[</span><span class="n">s</span><span class="o">][</span><span class="n">c</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+					<span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="n">s</span><span class="o">,</span> <span class="n">c</span> <span class="o">});</span>
+				<span class="o">}</span>
+				
+				<span class="n">c</span> <span class="o">=</span> <span class="n">cur</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">c</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">s</span> <span class="o">+=</span> <span class="n">c</span><span class="o">;</span>
+					<span class="k">if</span><span class="o">(</span><span class="n">s</span> <span class="o">==</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+						<span class="k">return</span> <span class="n">time</span><span class="o">;</span>
+					<span class="o">}</span>
+					<span class="k">if</span><span class="o">(</span><span class="n">inside</span><span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">c</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">visit</span><span class="o">[</span><span class="n">s</span><span class="o">][</span><span class="n">c</span><span class="o">])</span> <span class="o">{</span>
+						<span class="n">visit</span><span class="o">[</span><span class="n">s</span><span class="o">][</span><span class="n">c</span><span class="o">]</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+						<span class="n">q</span><span class="o">.</span><span class="na">offer</span><span class="o">(</span><span class="k">new</span> <span class="kt">int</span><span class="o">[]</span> <span class="o">{</span> <span class="n">s</span><span class="o">,</span> <span class="n">c</span> <span class="o">});</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+				
+			<span class="o">}</span>
+		<span class="o">}</span>
+		
+		<span class="k">return</span> <span class="n">time</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">inside</span><span class="o">(</span><span class="kt">int</span> <span class="n">s</span><span class="o">,</span> <span class="kt">int</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="n">s</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">c</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">s</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">2</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

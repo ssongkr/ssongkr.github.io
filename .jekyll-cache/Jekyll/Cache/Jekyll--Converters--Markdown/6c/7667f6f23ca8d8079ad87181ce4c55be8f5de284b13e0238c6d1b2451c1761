@@ -1,0 +1,50 @@
+I"<h2 id="문제">문제</h2>
+<p><a href="https://programmers.co.kr/learn/courses/30/lessons/60057">프로그래머스 - 문자열 압축</a></p>
+
+<hr />
+<h2 id="설명">설명</h2>
+<p>문자열에서 같은 값이 연속해서 나타나는 것을 그 문자의 개수와 반복되는 값으로 표현하여 더 짧은 문자열로 줄여서 표현하는 문제다.</p>
+
+<hr />
+<h2 id="풀이">풀이</h2>
+<p>문자열 패턴의 길이를 통해 압축된 문자열의 길이를 구할 수 있다. 마지막에 남은 문자열의 길이를 더해줘야함에 주의하자. 남은 문자열의 길이는 원본 문자열의 길이에 부분 문자열의 길이를 모듈러 연산하여 구할 수 있다.</p>
+
+<hr />
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+
+	<span class="kd">public</span> <span class="kt">int</span> <span class="nf">solution</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">answer</span> <span class="o">=</span> <span class="mi">987654321</span><span class="o">;</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;=</span><span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="n">answer</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">answer</span><span class="o">,</span> <span class="n">compress</span><span class="o">(</span><span class="n">s</span><span class="o">,</span> <span class="n">i</span><span class="o">));</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">answer</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kt">int</span> <span class="nf">compress</span><span class="o">(</span><span class="nc">String</span> <span class="n">s</span><span class="o">,</span> <span class="kt">int</span> <span class="n">len</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+		<span class="nc">String</span> <span class="n">cur</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">len</span><span class="o">);</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="n">len</span><span class="o">;</span> <span class="n">i</span><span class="o">+</span><span class="n">len</span><span class="o">&lt;=</span><span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">();</span> <span class="n">i</span> <span class="o">+=</span> <span class="n">len</span><span class="o">)</span> <span class="o">{</span>
+			<span class="nc">String</span> <span class="n">next</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">i</span><span class="o">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">len</span><span class="o">);</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">cur</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">next</span><span class="o">))</span> <span class="o">{</span>
+				<span class="n">count</span><span class="o">++;</span>
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+				<span class="n">ret</span> <span class="o">+=</span> <span class="n">len</span><span class="o">;</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+					<span class="n">ret</span> <span class="o">+=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">count</span><span class="o">).</span><span class="na">length</span><span class="o">();</span>
+				<span class="o">}</span>
+				<span class="n">cur</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
+				<span class="n">count</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="n">ret</span> <span class="o">+=</span> <span class="n">len</span><span class="o">;</span>
+		<span class="k">if</span><span class="o">(</span><span class="n">count</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">ret</span> <span class="o">+=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">count</span><span class="o">).</span><span class="na">length</span><span class="o">();</span>
+		<span class="o">}</span>
+		<span class="n">ret</span> <span class="o">+=</span> <span class="n">s</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">%</span> <span class="n">len</span><span class="o">;</span>
+		<span class="k">return</span> <span class="n">ret</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

@@ -1,0 +1,163 @@
+I"�k<h2 id="문제">문제</h2>
+<p><a href="https://www.acmicpc.net/problem/10875">백준 - 뱀</a></p>
+
+<hr />
+<h2 id="설명">설명</h2>
+<p>뱀의 이동 경로가 주어졌을때, 뱀이 이동할 수 있는 최대 거리를 구하는 문제다.</p>
+
+<hr />
+<h2 id="풀이">풀이</h2>
+<p>뱀을 한 칸씩 이동시키며 밖에 나갔는지 아니면 자신의 몸에 닿았는지 확인하면 시간초과가 발생한다. 그 이유는 뱀의 이동거리 T가 1억의 범위를 갖고, 이 명령어가 최대 1000개 존재하기 때문이다. 따라서 뱀의 이동 경로를 선분으로 저장하여 이동 가능성을 확인해야한다.</p>
+
+<hr />
+<h2 id="코드">코드</h2>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.*</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+	
+	<span class="kd">static</span> <span class="kd">class</span> <span class="nc">Path</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">pr</span><span class="o">,</span> <span class="n">pc</span><span class="o">,</span> <span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">;</span>
+		<span class="kd">public</span> <span class="nf">Path</span><span class="o">(</span><span class="kt">int</span> <span class="n">pr</span><span class="o">,</span> <span class="kt">int</span> <span class="n">pc</span><span class="o">,</span> <span class="kt">int</span> <span class="n">nr</span><span class="o">,</span> <span class="kt">int</span> <span class="n">nc</span><span class="o">)</span> <span class="o">{</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">pr</span> <span class="o">=</span> <span class="n">pr</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">pc</span> <span class="o">=</span> <span class="n">pc</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">nr</span> <span class="o">=</span> <span class="n">nr</span><span class="o">;</span>
+			<span class="k">this</span><span class="o">.</span><span class="na">nc</span> <span class="o">=</span> <span class="n">nc</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	
+	<span class="kd">static</span> <span class="kt">int</span> <span class="no">L</span><span class="o">,</span> <span class="no">N</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">Path</span><span class="o">&gt;</span> <span class="n">paths</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+	
+	<span class="kd">static</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">step</span><span class="o">;</span>
+	<span class="kd">static</span> <span class="kt">char</span><span class="o">[]</span> <span class="n">rot</span><span class="o">;</span>
+	
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">dr</span> <span class="o">=</span> <span class="o">{</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">0</span> <span class="o">};</span>
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">dc</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span> <span class="o">};</span>
+	
+	<span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">INF</span> <span class="o">=</span> <span class="mi">987654321</span><span class="o">;</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+		
+		<span class="nc">BufferedReader</span> <span class="n">br</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">BufferedReader</span><span class="o">(</span><span class="k">new</span> <span class="nc">InputStreamReader</span><span class="o">(</span><span class="nc">System</span><span class="o">.</span><span class="na">in</span><span class="o">));</span>
+		<span class="no">L</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+		<span class="no">N</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+		<span class="n">step</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">int</span><span class="o">[</span><span class="no">N</span><span class="o">+</span><span class="mi">1</span><span class="o">];</span>
+		<span class="n">rot</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span><span class="o">[</span><span class="no">N</span><span class="o">+</span><span class="mi">1</span><span class="o">];</span>
+		
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">N</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="nc">StringTokenizer</span> <span class="n">st</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringTokenizer</span><span class="o">(</span><span class="n">br</span><span class="o">.</span><span class="na">readLine</span><span class="o">());</span>
+			<span class="n">step</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">());</span>
+			<span class="n">rot</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="na">nextToken</span><span class="o">().</span><span class="na">charAt</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+		<span class="o">}</span>
+		<span class="n">step</span><span class="o">[</span><span class="no">N</span><span class="o">]</span> <span class="o">=</span> <span class="no">L</span> <span class="o">*</span> <span class="mi">3</span><span class="o">;</span>
+		<span class="n">rot</span><span class="o">[</span><span class="no">N</span><span class="o">]</span> <span class="o">=</span> <span class="sc">'L'</span><span class="o">;</span>
+		
+		<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">solve</span><span class="o">());</span>
+		
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">long</span> <span class="nf">solve</span><span class="o">()</span> <span class="o">{</span>
+		<span class="kt">long</span> <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="kt">int</span> <span class="n">col</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+		<span class="kt">int</span> <span class="n">dir</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="no">N</span><span class="o">+</span><span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="kt">int</span> <span class="n">nr</span> <span class="o">=</span> <span class="n">row</span> <span class="o">+</span> <span class="n">dr</span><span class="o">[</span><span class="n">dir</span><span class="o">]</span> <span class="o">*</span> <span class="n">step</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+			<span class="kt">int</span> <span class="n">nc</span> <span class="o">=</span> <span class="n">col</span> <span class="o">+</span> <span class="n">dc</span><span class="o">[</span><span class="n">dir</span><span class="o">]</span> <span class="o">*</span> <span class="n">step</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+			
+			<span class="kt">int</span> <span class="n">dist</span><span class="o">;</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">dir</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">dir</span> <span class="o">==</span> <span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">dist</span> <span class="o">=</span> <span class="n">visit</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">,</span> <span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">,</span> <span class="n">dir</span><span class="o">);</span>
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+				<span class="n">dist</span> <span class="o">=</span> <span class="n">visit</span><span class="o">(</span><span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">,</span> <span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">,</span> <span class="n">dir</span><span class="o">);</span>
+			<span class="o">}</span>
+			
+			<span class="k">if</span><span class="o">(</span><span class="n">dist</span> <span class="o">!=</span> <span class="no">INF</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="n">ret</span> <span class="o">+</span> <span class="n">dist</span><span class="o">;</span>
+			<span class="o">}</span>
+			
+			<span class="k">if</span><span class="o">(!</span><span class="n">inside</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">))</span> <span class="o">{</span>
+				<span class="k">return</span> <span class="n">ret</span> <span class="o">+</span> <span class="n">getDist</span><span class="o">(</span><span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">,</span> <span class="n">dir</span><span class="o">);</span>
+			<span class="o">}</span>
+			<span class="n">ret</span> <span class="o">+=</span> <span class="n">step</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+			
+			<span class="k">if</span><span class="o">(</span><span class="n">dir</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">dir</span> <span class="o">==</span> <span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">paths</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Path</span><span class="o">(</span><span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">,</span> <span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">));</span>
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+				<span class="n">paths</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="nc">Path</span><span class="o">(</span><span class="n">row</span><span class="o">,</span> <span class="n">col</span><span class="o">,</span> <span class="n">nr</span><span class="o">,</span> <span class="n">nc</span><span class="o">));</span>
+			<span class="o">}</span>
+			
+			<span class="k">if</span><span class="o">(</span><span class="n">rot</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">==</span> <span class="sc">'L'</span><span class="o">)</span> <span class="o">{</span>
+				<span class="n">dir</span> <span class="o">=</span> <span class="o">(</span><span class="n">dir</span> <span class="o">+</span> <span class="mi">3</span><span class="o">)</span> <span class="o">%</span> <span class="mi">4</span><span class="o">;</span>
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+				<span class="n">dir</span> <span class="o">=</span> <span class="o">(</span><span class="n">dir</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span> <span class="o">%</span> <span class="mi">4</span><span class="o">;</span>
+			<span class="o">}</span>
+			
+			<span class="n">row</span> <span class="o">=</span> <span class="n">nr</span><span class="o">;</span>
+			<span class="n">col</span> <span class="o">=</span> <span class="n">nc</span><span class="o">;</span>
+		<span class="o">}</span>
+		
+		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">getDist</span><span class="o">(</span><span class="kt">int</span> <span class="n">row</span><span class="o">,</span> <span class="kt">int</span> <span class="n">col</span><span class="o">,</span> <span class="kt">int</span> <span class="n">dir</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">switch</span><span class="o">(</span><span class="n">dir</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">case</span> <span class="mi">0</span> <span class="o">:</span> <span class="k">return</span> <span class="n">row</span> <span class="o">+</span> <span class="no">L</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+		<span class="k">case</span> <span class="mi">1</span> <span class="o">:</span> <span class="k">return</span> <span class="no">L</span> <span class="o">-</span> <span class="n">col</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+		<span class="k">case</span> <span class="mi">2</span> <span class="o">:</span> <span class="k">return</span> <span class="no">L</span> <span class="o">-</span> <span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+		<span class="k">default</span><span class="o">:</span> <span class="k">return</span> <span class="n">col</span> <span class="o">+</span> <span class="no">L</span> <span class="o">+</span> <span class="mi">1</span><span class="o">;</span>
+		<span class="o">}</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">visit</span><span class="o">(</span><span class="kt">int</span> <span class="n">pr</span><span class="o">,</span> <span class="kt">int</span> <span class="n">pc</span><span class="o">,</span> <span class="kt">int</span> <span class="n">nr</span><span class="o">,</span> <span class="kt">int</span> <span class="n">nc</span><span class="o">,</span> <span class="kt">int</span> <span class="n">dir</span><span class="o">)</span> <span class="o">{</span>
+		<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="no">INF</span><span class="o">;</span>
+		<span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">paths</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+			<span class="nc">Path</span> <span class="n">p</span> <span class="o">=</span> <span class="n">paths</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+			<span class="k">if</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">pr</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="na">nr</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">dir</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">dir</span> <span class="o">==</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">if</span><span class="o">(</span><span class="n">pr</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="o">.</span><span class="na">pr</span> <span class="o">&amp;&amp;</span> <span class="n">p</span><span class="o">.</span><span class="na">pr</span> <span class="o">&lt;=</span> <span class="n">nr</span> <span class="o">&amp;&amp;</span> <span class="n">p</span><span class="o">.</span><span class="na">pc</span> <span class="o">&lt;=</span> <span class="n">pc</span> <span class="o">&amp;&amp;</span> <span class="n">pc</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="o">.</span><span class="na">nc</span><span class="o">)</span> <span class="o">{</span>
+						<span class="k">if</span><span class="o">(</span><span class="n">dir</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+							<span class="n">ret</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">ret</span><span class="o">,</span> <span class="n">nr</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="na">pr</span><span class="o">);</span>
+						<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+							<span class="n">ret</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">ret</span><span class="o">,</span> <span class="n">p</span><span class="o">.</span><span class="na">nr</span> <span class="o">-</span> <span class="n">pr</span><span class="o">);</span>
+						<span class="o">}</span>
+					<span class="o">}</span>
+				<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+					<span class="k">if</span><span class="o">(</span><span class="n">pr</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="na">pr</span><span class="o">)</span> <span class="o">{</span>
+						<span class="k">if</span><span class="o">(</span><span class="n">dir</span> <span class="o">==</span> <span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="n">p</span><span class="o">.</span><span class="na">nc</span> <span class="o">&lt;=</span> <span class="n">nc</span> <span class="o">&amp;&amp;</span> <span class="n">pc</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="o">.</span><span class="na">nc</span><span class="o">)</span> <span class="o">{</span>
+							<span class="n">ret</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">ret</span><span class="o">,</span> <span class="n">p</span><span class="o">.</span><span class="na">pc</span> <span class="o">-</span> <span class="n">pc</span><span class="o">);</span>
+						<span class="o">}</span> <span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">dir</span> <span class="o">==</span> <span class="mi">3</span> <span class="o">&amp;&amp;</span> <span class="n">p</span><span class="o">.</span><span class="na">nc</span> <span class="o">&gt;=</span> <span class="n">pc</span> <span class="o">&amp;&amp;</span> <span class="n">nc</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="na">pc</span><span class="o">)</span> <span class="o">{</span>
+							<span class="n">ret</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">ret</span><span class="o">,</span> <span class="n">nc</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="na">nc</span><span class="o">);</span>
+						<span class="o">}</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+			<span class="o">}</span> <span class="k">else</span> <span class="o">{</span> <span class="c1">// p.pc == p.nc</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">dir</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">dir</span> <span class="o">==</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+					<span class="k">if</span><span class="o">(</span><span class="n">pc</span> <span class="o">==</span> <span class="n">p</span><span class="o">.</span><span class="na">pc</span><span class="o">)</span> <span class="o">{</span>
+						<span class="k">if</span><span class="o">(</span><span class="n">dir</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">pr</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="o">.</span><span class="na">nr</span> <span class="o">&amp;&amp;</span> <span class="n">nr</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="na">pr</span><span class="o">)</span> <span class="o">{</span>
+							<span class="n">ret</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">ret</span><span class="o">,</span> <span class="n">nr</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="na">nr</span><span class="o">);</span>
+						<span class="o">}</span> <span class="k">else</span> <span class="k">if</span><span class="o">(</span><span class="n">dir</span> <span class="o">==</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="n">pr</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="o">.</span><span class="na">nr</span> <span class="o">&amp;&amp;</span> <span class="n">nr</span> <span class="o">&gt;=</span> <span class="n">p</span><span class="o">.</span><span class="na">pr</span><span class="o">){</span>
+							<span class="n">ret</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">ret</span><span class="o">,</span> <span class="n">p</span><span class="o">.</span><span class="na">pr</span> <span class="o">-</span> <span class="n">pr</span><span class="o">);</span>
+						<span class="o">}</span>
+					<span class="o">}</span>
+				<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+					<span class="k">if</span><span class="o">(</span><span class="n">p</span><span class="o">.</span><span class="na">pr</span> <span class="o">&lt;=</span> <span class="n">pr</span> <span class="o">&amp;&amp;</span> <span class="n">pr</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="o">.</span><span class="na">nr</span> <span class="o">&amp;&amp;</span> <span class="n">pc</span> <span class="o">&lt;=</span> <span class="n">p</span><span class="o">.</span><span class="na">pc</span> <span class="o">&amp;&amp;</span> <span class="n">p</span><span class="o">.</span><span class="na">pc</span> <span class="o">&lt;=</span> <span class="n">nc</span><span class="o">)</span> <span class="o">{</span>
+						<span class="k">if</span><span class="o">(</span><span class="n">dir</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+							<span class="n">ret</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">ret</span><span class="o">,</span> <span class="n">p</span><span class="o">.</span><span class="na">pc</span> <span class="o">-</span> <span class="n">pc</span><span class="o">);</span>
+						<span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+							<span class="n">ret</span> <span class="o">=</span> <span class="nc">Math</span><span class="o">.</span><span class="na">min</span><span class="o">(</span><span class="n">ret</span><span class="o">,</span> <span class="n">nc</span> <span class="o">-</span> <span class="n">p</span><span class="o">.</span><span class="na">nc</span><span class="o">);</span>
+						<span class="o">}</span>
+					<span class="o">}</span>
+				<span class="o">}</span>
+			<span class="o">}</span>
+		<span class="o">}</span>
+		<span class="k">return</span> <span class="n">ret</span><span class="o">;</span>
+	<span class="o">}</span>
+	
+	<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">inside</span><span class="o">(</span><span class="kt">int</span> <span class="n">r</span><span class="o">,</span> <span class="kt">int</span> <span class="n">c</span><span class="o">)</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">r</span><span class="o">)</span> <span class="o">&lt;=</span> <span class="no">L</span> <span class="o">&amp;&amp;</span> <span class="nc">Math</span><span class="o">.</span><span class="na">abs</span><span class="o">(</span><span class="n">c</span><span class="o">)</span> <span class="o">&lt;=</span> <span class="no">L</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET

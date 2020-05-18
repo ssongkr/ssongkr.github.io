@@ -1,0 +1,39 @@
+I"�<h2 id="문제">문제</h2>
+<p><a href="https://programmers.co.kr/learn/courses/30/lessons/42884">프로그래머스 - 단속카메라</a></p>
+
+<h2 id="풀이">풀이</h2>
+<p>자동차 경로의 끝 지점을 기준으로 오름차순으로 정렬한다.</p>
+
+<p>첫번째 자동차의 끝 지점은 카메라의 기준점 중 최댓값이 된다.</p>
+
+<p>만약 카메라가 자동차를 더 이상 감시할 수 없다면 현재 자동차의 끈 지점을 기준으로 카메라를 하나 더 설치한다.</p>
+
+<h2 id="코드">코드</h2>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.util.*</span><span class="o">;</span>
+
+<span class="kd">class</span> <span class="nc">Solution</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="nf">solution</span><span class="o">(</span><span class="kt">int</span><span class="o">[][]</span> <span class="n">routes</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">int</span> <span class="n">answer</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="nc">Arrays</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">routes</span><span class="o">,</span> <span class="k">new</span> <span class="nc">Comparator</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">[]&gt;()</span> <span class="o">{</span>
+			<span class="nd">@Override</span>
+			<span class="kd">public</span> <span class="kt">int</span> <span class="nf">compare</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="n">o1</span><span class="o">,</span> <span class="kt">int</span><span class="o">[]</span> <span class="n">o2</span><span class="o">)</span> <span class="o">{</span>
+				<span class="k">if</span><span class="o">(</span><span class="n">o1</span><span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="o">==</span> <span class="n">o2</span><span class="o">[</span><span class="mi">1</span><span class="o">])</span> <span class="o">{</span>
+					<span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">o1</span><span class="o">[</span><span class="mi">0</span><span class="o">],</span> <span class="n">o2</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+				<span class="o">}</span>
+				<span class="k">return</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">o1</span><span class="o">[</span><span class="mi">1</span><span class="o">],</span> <span class="n">o2</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
+			<span class="o">}</span>
+		<span class="o">});</span>
+        
+        <span class="kt">int</span> <span class="n">pivot</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100000</span><span class="o">;</span>
+        <span class="k">for</span><span class="o">(</span><span class="kt">int</span><span class="o">[]</span> <span class="nl">route:</span> <span class="n">routes</span><span class="o">)</span> <span class="o">{</span>
+        	<span class="k">if</span><span class="o">(</span><span class="n">pivot</span> <span class="o">&lt;</span> <span class="n">route</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">||</span> <span class="n">pivot</span> <span class="o">&gt;</span> <span class="n">route</span><span class="o">[</span><span class="mi">1</span><span class="o">])</span> <span class="o">{</span>
+        		<span class="n">pivot</span> <span class="o">=</span> <span class="n">route</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+        		<span class="n">answer</span><span class="o">++;</span>
+        	<span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">answer</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+:ET
