@@ -8,6 +8,8 @@ layout: post
 
 
 ## HTTP Protocol이란?
+
+
 HTTP(HyperText Transfer Protocol)는 인터넷상에서 데이터를 주고 받기 위한 서버/클라이언트 모델을 따르는 프로토콜이다. 애플리케이션 계층의 프로토콜로 TCP/IP위에서 동작한다.
 
 

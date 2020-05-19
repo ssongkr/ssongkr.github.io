@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "[프로그래머스] 문자열 압축 - 2020 KAKAO BLIND RECRUITMENT[1/7]"
-tags: 알고리즘 프로그래머스
+tags: 알고리즘 프로그래머스 카카오기출
 ---
 
 ## 문제

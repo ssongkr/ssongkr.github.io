@@ -1,7 +1,8 @@
-I"E<h2 id="들어가며">들어가며</h2>
+I"F<h2 id="들어가며">들어가며</h2>
 <p>과거 리액트 네이티브로 앱을 개발하면서 HTTP Protocol에 대해 한 차례 공부한적이 있다. 당시에 네트워크 지식에 완전 문외한이었기 때문에 보면서도 잘 이해가지 않는 부분이 많았고, 자주 사용하는 Http method만 사용하다보니 그 밖에 것들은 잘 기억이 나지 않는다. 최근 Spring Framework를 통해 Rest Api를 구현해보고 있기 때문에, HTTP Protocol을 다시 한 번 정리해보려 한다.</p>
 
 <h2 id="http-protocol이란">HTTP Protocol이란?</h2>
+
 <p>HTTP(HyperText Transfer Protocol)는 인터넷상에서 데이터를 주고 받기 위한 서버/클라이언트 모델을 따르는 프로토콜이다. 애플리케이션 계층의 프로토콜로 TCP/IP위에서 동작한다.</p>
 
 <h2 id="request--response">Request &amp; Response</h2>
