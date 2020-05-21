@@ -1,0 +1,11 @@
+퍼시스턴스 프레임워크
+
+AOP
+
+Servlet JSP EL JSTL
+
+JDBC Driver 이런거 개념 조금 명확히 하고 가는게 좋을 것 같음.
+
+https://dyjung.tistory.com/50
+
+SOLID 디자인 원칙
