@@ -2,7 +2,7 @@
 title: "Songkr's development blog"
 description: 'Description of my blog'
 keyword: 'java, spring, typescript, algorithm'
-url: '' # your host
+url: 'https://ssongkr.github.io/' # your host
 
 # when build blog on server, if you don't need baseurl, you should leave this value blank.
 # 在服务器上建站时，如果你不需要子域名，请将这一格留空
@@ -84,4 +84,4 @@ RSS: false
 permalink: /:year/:month/:day/:title.html
 
 # Plugins
-plugins: [jekyll-paginate]
+plugins: ['jekyll-paginate', 'jekyll-sitemap']
