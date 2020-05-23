@@ -11,6 +11,7 @@ https://dyjung.tistory.com/50
 SOLID 디자인 원칙
 
 로드 밸런싱
+https://post.naver.com/viewer/postView.nhn?volumeNo=27046347&memberNo=2521903
 
 
 HTTP 너무 좋은 포스팅
