@@ -111,7 +111,9 @@ a {
         .g-header .g-nav > ul > li > a:hover {
           opacity: 1; }
   .g-header .nav-default a:hover {
-    color: #1494FB !important; }
+    /* color: #1494FB !important;  */
+    background-color: rgb(12, 70, 43) !important;  
+  }
   .g-header .nav-pink a:hover {
     color: #FC6794 !important; }
 
@@ -151,10 +153,15 @@ a {
     margin-top: 8px; }
 
 .banner-theme-default {
-  background: -webkit-linear-gradient(0deg, #3CD5FF, #007AFF);
+  /* background: -webkit-linear-gradient(0deg, #3CD5FF, #007AFF);
   background: -o-linear-gradient(0deg, #3CD5FF, #007AFF);
   background: -moz-linear-gradient(0deg, #3CD5FF, #007AFF);
-  background: linear-gradient(100deg, #3CD5FF, #007AFF); }
+  background: linear-gradient(100deg, #3CD5FF, #007AFF);  */
+  background: -webkit-linear-gradient(0deg, rgb(37, 108, 81), rgb(12, 70, 43));
+  background: -o-linear-gradient(0deg, rgb(37, 108, 81), rgb(12, 70, 43));
+  background: -moz-linear-gradient(0deg, rgb(37, 108, 81), rgb(12, 70, 43));
+  background: linear-gradient(100deg, rgb(37, 108, 81), rgb(12, 70, 43)); 
+}
 
 .banner-theme-pink {
   background: -webkit-linear-gradient(0deg, #FFCE69, #FA709A);
@@ -163,7 +170,9 @@ a {
   background: linear-gradient(100deg, #FFCE69, #FA709A); }
 
 .themeColor-default {
-  background-color: #1494FB; }
+  /* background-color: #1494FB;  */
+  background-color: rgb(12, 70, 43);  
+}
 
 .themeColor-pink {
   background-color: #FC6794; }
@@ -561,7 +570,9 @@ a {
     z-index: -2; }
 
 .bgcolor-default {
-  background-color: #1494FB; }
+  /* background-color: #1494FB;  */
+  background-color: rgb(12, 70, 43);  
+}
 
 .bgcolor-pink {
   background-color: #FC6794; }

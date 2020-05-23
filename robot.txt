@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: http://ssongkr.github.io/sitemap.xml

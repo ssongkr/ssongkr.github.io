@@ -1,4 +1,4 @@
-I"c<h2 id="들어가며">들어가며</h2>
+I"�<h2 id="들어가며">들어가며</h2>
 <hr />
 <p>클라이언트-서버 프로그래밍을 해봤다면 RESTful API를 듣고 사용해본 경험이 있을 것이다. 그렇다면 REST는 무엇일까? REST는 HTTP 프로토콜을 사용하는데 두 개념적 차이가 무엇일까?</p>
 
@@ -20,7 +20,7 @@
 
 <p>하지만 웹이 빠르게 성장하면서 문제가 발생했다. 인기있는 문서는 서로 다른 장소에 있는 이용자들로부터 많은 요청을 받게 되었다. 물리적으로 가까운 위치에 있는 사용자가 자료를 이미 받았더라도, 동일한 자료를 요청하는 사용자는 원래의 서버에 문서를 요청해야 했다.</p>
 
-<p>그리고 사용자들은 다양한 방식으로 새로운 기술들을 사용하기 시작했다. 그들은 단순한 하이퍼텍스트 문서만 제공하는 대신 이미지를 웹 사이트에 추가했다. 초기 버전의 HTTP는 연결 당 하나의 문서만 제공할 수 있었기 때문에 이미지는 대체로 문서에 포함되어(inline) 있었다.</p>
+<p>그리고 사용자들은 다양한 방식으로 새로운 기술들을 사용하기 시작했다. 그들은 단순한 하이퍼텍스트 문서만 제공하는 대신 이미지를 웹 사이트에 추가했다. (초기 버전의 HTTP는 연결 당 하나의 문서만 제공할 수 있었기 때문에, 이미지는 대체로 문서에 포함되어(inline) 있었다.)</p>
 
 <p> </p>
 <h2 id="rest의-탄생">REST의 탄생</h2>
@@ -31,7 +31,7 @@
 
 <p>그래서 REST 아키텍처와 HTTP 1.1 프로토콜은 서로 독립적이지만, HTTP 1.1 프로토콜은 REST의 원칙과 제약을 따르는 프로토콜로 개발되었다.</p>
 
-<p>쉽게말해 REST는 설계 방식이고, HTTP 1.1은 REST 원칙을 준수한 구현체다. 실제로 HTTP와 REST는 동시에 동시에 디자인되었다.</p>
+<p>쉽게 말해 REST는 설계 원칙(Design principle)이고, HTTP 1.1은 REST 원칙을 준수한 구현체(Implementation)다. 실제로 HTTP와 REST는 동시에 동시에 디자인되었다.</p>
 
 <p> </p>
 <h2 id="rest-to-the-rescue">REST to the rescue</h2>
@@ -66,4 +66,6 @@
 <h2 id="출처">출처</h2>
 <hr />
 <p><a href="https://restishistory.net/blog/do-you-know-the-difference-between-http-and-rest.html">https://resthistory.net/blog</a></p>
+
+<p>https://code.tutsplus.com/tutorials/a-beginners-guide-to-http-and-rest–net-16340</p>
 :ET
