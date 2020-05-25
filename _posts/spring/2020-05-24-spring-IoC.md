@@ -96,7 +96,7 @@ public class Program {
 ```java
 public class A {
 
-    private B b;
+    B b;
 
     public A() {
         b = new B();
@@ -237,5 +237,4 @@ Factory Class는 IoC 구현의 간단한 구현(implementation)이다. 이는 �
 ## 참고
 ---
 - [https://www.baeldung.com/](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring)
-https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring
 - [https://www.tutorialsteacher.com/](https://www.tutorialsteacher.com/ioc/inversion-of-control)
