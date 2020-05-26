@@ -1,4 +1,4 @@
-I"�/<h2 id="들어가며">들어가며</h2>
+I"�,<h2 id="들어가며">들어가며</h2>
 <hr />
 <p>지난 포스팅에서 Factory Pattern을 이용하여 IoC 원칙을 구현해, 느슨한 결합의 첫번째 단계를 완성하였다. 하지만 이는 아직 느슨한 결합을 완벽하게 구현한 것이 아니다. 이번 포스팅에서는 느슨한 결합을 구현하기 위한 두번째 단계로 DIP 원칙을 어떻게 구현할 수 있는지 알아보겠다.</p>
 
@@ -6,7 +6,7 @@
 
 <p> </p>
 <h2 id="dipdependency-inversion-principle이란">DIP(Dependency Inversion Principle)이란?</h2>
-<p>DIP를 해석하면 의존관계의 역전이다. <code class="highlighter-rouge">Robert Martin</code>에 의해서 만들어진 객체지향 원칙으로 그 내용은 다음과 같다.</p>
+<p>DIP를 해석하면 의존 관계 역전의 원칙이다. <code class="highlighter-rouge">Robert Martin</code>에 의해서 만들어진 객체지향 원칙으로 그 내용은 다음과 같다.</p>
 
 <ol>
   <li>상위(High-level) 모듈은 하위(Low-level) 모듈에 의존하면 안된다. 두 모듈은 모두 <strong>추상적 개념(abstraction)</strong>에 의존해야 한다.</li>
@@ -48,29 +48,17 @@
   <p>구상 클래스(concrete class)는 객체를 생성할 수 있는 클래스를 의미한다. 즉, 인터페이스나 추상 클래스가 아닌 클래스를 의미한다.</p>
 </blockquote>
 
-<p><code class="highlighter-rouge">CustomerBusinessLogic</code>과 <code class="highlighter-rouge">DataAccess</code>에 DIP 원칙을 적용하여 위 코드가 더욱 느슨한 결합 상태가 되도록 만들어보자.</p>
+<p>그렇다면 위의 코드가 DIP 관점에서 어떤 문제가 있는지 살펴보자.</p>
 
-<p><strong><em>상위 모듈은 하위 모듈에 의존하면 안 된다. 두 모듈은 모두 추상적 개념에 의존 해야 한다.</em></strong> 그렇다면 위 예제에서 어떤 클래스가 상위 모듈이고, 어떤 클래스가 하위 모듈일까?</p>
+<p><strong><em>상위 모듈은 하위 모듈에 의존하면 안 된다. 두 모듈은 모두 추상적 개념에 의존 해야 한다.</em></strong></p>
 
-<p>상위 모듈은 다른 모듈에 의존하는 모듈이다. 위 예제에서 <code class="highlighter-rouge">CustomerBusinessLogic</code>은 Customer 데이터를 얻기 위해 <code class="highlighter-rouge">DataAccess</code>에 의존한다. 따라서 <code class="highlighter-rouge">CustomerBusinessLogic</code>은 상위 모듈이고, <code class="highlighter-rouge">DataAccess</code>는 하위 모듈이다. DIP의 첫 번째 원칙에 의하여 <code class="highlighter-rouge">CustomerBusinessLogic</code>은 <code class="highlighter-rouge">DataAccess</code>의 추상 클래스에 의존해야한다.</p>
+<p>위 예제에서 어떤 클래스가 상위 모듈이고, 어떤 클래스가 하위 모듈일까? 상위 모듈은 다른 모듈에 의존하는 모듈이다. 위 예제에서 <code class="highlighter-rouge">CustomerBusinessLogic</code>은 Customer 데이터를 얻기 위해 <code class="highlighter-rouge">DataAccess</code>에 의존한다. 따라서 <code class="highlighter-rouge">CustomerBusinessLogic</code>은 상위 모듈이고, <code class="highlighter-rouge">DataAccess</code>는 하위 모듈이다. <code class="highlighter-rouge">CustomerBusinessLogic</code>(상위 모듈)이 <code class="highlighter-rouge">DataAccess</code>(하위 모듈)에 의존하고 있기 때문에, 두 클래스는 강하게 결합 된 상태다.</p>
 
-<p><strong><em>세부구현(details)은 추상적 개념(abstraction)에 의존해야 한다.</em></strong> 그렇다면 추상적 개념이란 무엇일까?</p>
+<p><strong><em>세부구현(details)은 추상적 개념(abstraction)에 의존해야 한다.</em></strong></p>
 
-<p>추삭정 개념과 캡슐화는 객체지향 프로그래밍에서 매우 중요한 원칙이다. 위의 예제를 통해 추상화가 무엇인지 알아보자.</p>
+<p>추상적 개념과 캡슐화는 객체지향 프로그래밍에서 매우 중요한 원칙이다. 추상적 개념은 <strong>non-concrete 클래스</strong>로, 프로그래밍 관점에서 객체를 생성 할 수 없는 클래스를 말한다. <code class="highlighter-rouge">CustomerBusinessLogic</code>과 <code class="highlighter-rouge">DataAccess</code>는 객체를 생성 할 수 있기 때문에 <strong>concrete 클래스</strong>다. DIP 원칙에 의해 <code class="highlighter-rouge">CustomerBusinessLogic</code>과 <code class="highlighter-rouge">DataAccess</code>는 모두 추상적 개념에 의존 해야 한다. 쉽게 말해 두 클래스는 모두 인터페이스나 추상 클래스에 의존 해야 한다.</p>
 
-<p>추상화는 <code class="highlighter-rouge">non-concrete</code>한 것을 의미한다. 프로그래밍 관점에서 <code class="highlighter-rouge">CustomerBusinessLogic</code>과 <code class="highlighter-rouge">DataAccess</code>는 객체를 생성 할 수 있는 클래스다.</p>
-
-<h3 id="추상화란">추상화란?</h3>
-<p>추상화와 캡슐화는 객체지향 프로그래밍의 중요한 원칙이다. 이에 대한 다양한 정의가 있긴 하지만, 위의 예제를 통해 추상화가 무엇인지 알아보겠다.</p>
-
-<p>추상화는 non-concrete한 것을 의미한다. 프로그래밍 관점에서 CustomerBusinessLogic과 DataAccess는 concrete 클래스다. 따라서 프로그래밍에서 추상화란 인터페이스나 추상 클래스를 만드는 것을 의미한다. 이런 클래슨느 non-concrete하다고 한다.</p>
-<blockquote>
-  <p>concrete class는 객체를 생성할 수 있는 클래스를 의미한다.</p>
-</blockquote>
-
-<p>DIP 관점에서 CustomerBusinessLogic(상위 모듈)은 concrete 클래스인 DataAccess(하위 모듈)에 의존해서는 안된다. 두 클래스 모두 추상화에 의존해야한다. 쉽게 말해 두 클래스는 모두 인터페이스나 추상 클래스에 의존해야한다.</p>
-
-<p>이제 인터페이스에 어떤 것이 있는지 살펴보자. CustomerBusinessLogic은 DataAccess 클래스의 getCustomerName() 메서드를 사용한다. 따라서, 아래의 코드와 같이 인터페이스에 getCustomerName(int id) 메서드를 선언해보자.</p>
+<p>DIP의 원칙을 지키기 위해 먼저 아래 코드와 같이 인터페이스를 추가한다.</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ICustomerDataAccess</span> <span class="o">{</span>
 
@@ -78,11 +66,11 @@
 <span class="o">}</span>
 </code></pre></div></div>
 
-<p>그리고 아래와 같이 CustomerDataAccess 클래스에 ICustomerDataAccess를 구현한다.</p>
+<p>그리고 <code class="highlighter-rouge">CustomerDataAccess</code>가 <code class="highlighter-rouge">ICustomerDataAccess</code>를 구현하도록 한다.</p>
 
-<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CusgtomerDataAccess</span> <span class="kd">implements</span> <span class="nc">ICustomerDataAccess</span> <span class="o">{</span>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerDataAccess</span> <span class="kd">implements</span> <span class="nc">ICustomerDataAccess</span> <span class="o">{</span>
     
-    <span class="kd">public</span> <span class="nf">CustomerDataAccess</span><span class="o">()</span> <span class="o">{}</span>
+    <span class="kd">public</span> <span class="nf">CustomerDataAccess</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
 
     <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getCustomerName</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="s">"Dummy Customer Name"</span><span class="o">;</span>
@@ -90,7 +78,7 @@
 <span class="o">}</span>
 </code></pre></div></div>
 
-<p>그리고 아래와 같이 concrete DataAccess 객체를 반환하던 Factory 클래스가 ICustomerDataAccess를 반환하도록 코드를 수정한다.</p>
+<p>그리고 <code class="highlighter-rouge">DataAccessFactory</code>가 <code class="highlighter-rouge">ICustomerDataAccess</code> 객체(non-concrete class)를 반환하도록 코드를 수정한다.</p>
 
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataAccessFactory</span> <span class="o">{</span>
 
@@ -100,7 +88,8 @@
 <span class="o">}</span>
 </code></pre></div></div>
 
-<p>그리고, 아래와 같이 CustomerBusinessLogic 클래스가 concrete 클래스 DataAccess 대신 ICustomerDataAccess를 사용하도록 변경한다.</p>
+<p>마지막으로, <code class="highlighter-rouge">CustomerBusinessLogic</code>이 <code class="highlighter-rouge">DataAccess</code>(concrete class) 대신 <code class="highlighter-rouge">ICustomerDataAccess</code> (non-concrete class)를 사용하도록 코드를 수정한다.</p>
+
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerBusinessLogic</span> <span class="o">{</span>
 
     <span class="nc">ICustomerBusinessLogic</span> <span class="n">custDataAccess</span><span class="o">;</span>
@@ -115,19 +104,17 @@
 <span class="o">}</span>
 </code></pre></div></div>
 
-<p>이제 하위 모듈과 상위 모듈이 모두 추상화에 의존하도록 DIP를 구현하였다. 또한 추상화(ICustomerDataAccess)는 세부 구현(CustomerDataAccess)에 의존하지 않고, 세부 구현이 추상화에 의존한다.</p>
+<p>이제 상위 모듈과 하위 모듈이 모두 추상적 개념(인터페이스)에 의존한다. 또한, 세부 구현(CustomerDataAccess)가 추상적 개념(ICustomerDataAccess)에 의존한다.</p>
 
-<p>위의 예제처럼 DIP를 구현하는 것의 장점은 CustomerBusinessLogic과 CustomerDataAccess가 느슨하게 연결됐다는 것이다. CustomerBusinessLogic은 concrete DataAccess 클래스에 의존하지 않고, ICustomerDataAccess 인터페이스의 레퍼런스를 포함하고 있기 때문이다. 따라서 지금부터 우리는 ICustomerDataAccess 클래스의 다양한 구현 클래스를 쉽게 변경하면서 사용할 수 있다.</p>
+<p>따라서 위 코드는 DIP를 구현한 것이라 할 수 있다. DIP를 구현하면서 얻을 수 있는 장점은 <code class="highlighter-rouge">CustomerBusinessLogic</code>과 <code class="highlighter-rouge">CustomerDataAccess</code>가 느슨하게 결합됐다는 것이다. 즉, 우리는 <code class="highlighter-rouge">CustomerBusinessLogic</code>의 내용을 변경하지 않아도 <code class="highlighter-rouge">ICustomerDataAccess</code>의 구현 클래스들을 변경하면서 사용할 수 있다.</p>
 
-<p>하지만 여전히 이는 완전히 느슨하게 연결된 클래스는 아니다. 그 이유는 CustomerBusinessLogic 클래스는 ICustomerDataAccess의 레퍼런스를 얻기 위한 Factory 클래스를 포함하고 있기 때문이다. 이 부분이 Dependency Injection pattern이 우리를 도와줄 것이다. 다음 챕터에서는</p>
+<p>하지만 <code class="highlighter-rouge">CustomerBusinessLogic</code>은 <code class="highlighter-rouge">ICustomerDataAccess</code>의 레퍼런스를 얻기 위해서 <code class="highlighter-rouge">Factory</code> 클래스를 이용하고 있기 때문에, 이는 완전히 느슨한 결합이 아니다. 이 문제는 DI(Dependency Injection)의 구현을 통해 해결할 수 있다. DI의 개념과 실제 적용은 다음 포스팅에서 살펴보도록 하겠다.</p>
 
 <p> </p>
 <h2 id="출처">출처</h2>
 <hr />
 <ul>
-  <li><a href="https://www.journaldev.com/2888/spring-tutorial-spring-core-tutorial">Spring Core Framework Tutorials</a></li>
-  <li>스프링 부트로 배우는 자바 웹 개발 (제이펍)</li>
   <li><a href="https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring">https://www.baeldung.com/</a></li>
-  <li><a href="https://www.tutorialsteacher.com/ioc/inversion-of-control">https://www.tutorialsteacher.com/</a></li>
+  <li><a href="https://www.tutorialsteacher.com/ioc/dependency-inversion-principle">https://www.tutorialsteacher.com/</a></li>
 </ul>
 :ET

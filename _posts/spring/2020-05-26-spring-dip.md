@@ -2,7 +2,7 @@
 title: "[스프링] 스프링 핵심 개념 정리 - DIP [2/4]"
 layout: post
 tags: '스프링'
-subtitle: '스프링의 핵심 개념인 제어의 역전(IoC), 의존 관계 역전 원칙(DIP), 의존성 주입(DI)을 학습한다.'
+subtitle: '스프링의 핵심 개념인 의존 관계 역전의 법칙(DIP: Dependency Inversion Principle)을 학습한다.'
 ---
 
 ## 들어가며
@@ -13,7 +13,7 @@ subtitle: '스프링의 핵심 개념인 제어의 역전(IoC), 의존 관계 �
 
 &nbsp;
 ## DIP(Dependency Inversion Principle)이란?
-DIP를 해석하면 의존관계의 역전이다. `Robert Martin`에 의해서 만들어진 객체지향 원칙으로 그 내용은 다음과 같다.
+DIP를 해석하면 의존 관계 역전의 원칙이다. `Robert Martin`에 의해서 만들어진 객체지향 원칙으로 그 내용은 다음과 같다.
 
 1. 상위(High-level) 모듈은 하위(Low-level) 모듈에 의존하면 안된다. 두 모듈은 모두 **추상적 개념(abstraction)**에 의존해야 한다.
 2. 세부구현(details)은 추상적 개념(abstraction)에 의존해야 한다.
@@ -56,11 +56,11 @@ public class DataAccess {
 
 ***상위 모듈은 하위 모듈에 의존하면 안 된다. 두 모듈은 모두 추상적 개념에 의존 해야 한다.***
 
-위 예제에서 어떤 클래스가 상위 모듈이고, 어떤 클래스가 하위 모듈일까? 상위 모듈은 다른 모듈에 의존하는 모듈이다. 위 예제에서 `CustomerBusinessLogic`은 Customer 데이터를 얻기 위해 `DataAccess`에 의존한다. 따라서 `CustomerBusinessLogic`은 상위 모듈이고, `DataAccess`는 하위 모듈이다. 위 예제에서 `CustomerBusinessLogic`(상위 모듈)은 `DataAccess`(하위 모듈)에 의존하고 있기 때문에, 강하게 결합 된 클래스다.
+위 예제에서 어떤 클래스가 상위 모듈이고, 어떤 클래스가 하위 모듈일까? 상위 모듈은 다른 모듈에 의존하는 모듈이다. 위 예제에서 `CustomerBusinessLogic`은 Customer 데이터를 얻기 위해 `DataAccess`에 의존한다. 따라서 `CustomerBusinessLogic`은 상위 모듈이고, `DataAccess`는 하위 모듈이다. `CustomerBusinessLogic`(상위 모듈)이 `DataAccess`(하위 모듈)에 의존하고 있기 때문에, 두 클래스는 강하게 결합 된 상태다.
 
 ***세부구현(details)은 추상적 개념(abstraction)에 의존해야 한다.*** 
 
-추상적 개념과 캡슐화는 객체지향 프로그래밍에서 매우 중요한 원칙이다. 추상적 개념은 **non-concrete 클래스**로, 프로그래밍 관점에서 객체를 생성 할 수 없는 클래스를 말한다. `CustomerBusinessLogic`과 `DataAccess`는 객체를 생성 할 수 있기 때문에 **concrete 클래스**다. DIP 원칙에 의해 `CustomerBusinessLogic`과 `DataAccess`은 모두 추상적 개념에 의존 해야 한다. 쉽게 말해 두 클래스는 모두 인터페이스나 추상 클래스에 의존 해야 한다.
+추상적 개념과 캡슐화는 객체지향 프로그래밍에서 매우 중요한 원칙이다. 추상적 개념은 **non-concrete 클래스**로, 프로그래밍 관점에서 객체를 생성 할 수 없는 클래스를 말한다. `CustomerBusinessLogic`과 `DataAccess`는 객체를 생성 할 수 있기 때문에 **concrete 클래스**다. DIP 원칙에 의해 `CustomerBusinessLogic`과 `DataAccess`는 모두 추상적 개념에 의존 해야 한다. 쉽게 말해 두 클래스는 모두 인터페이스나 추상 클래스에 의존 해야 한다.
 
 DIP의 원칙을 지키기 위해 먼저 아래 코드와 같이 인터페이스를 추가한다.
 
@@ -71,12 +71,12 @@ public interface ICustomerDataAccess {
 }
 ```
 
-그리고 CustomerDataAccess가 `ICustomerDataAccess`를 구현하도록 만든다.
+그리고 `CustomerDataAccess`가 `ICustomerDataAccess`를 구현하도록 한다.
 
 ```java
 public class CustomerDataAccess implements ICustomerDataAccess {
     
-    public CustomerDataAccess() {}
+    public CustomerDataAccess() { }
 
     public String getCustomerName(int id) {
         return "Dummy Customer Name";
@@ -95,7 +95,7 @@ public class DataAccessFactory {
 }
 ```
 
-마지막으로 `CustomerBusinessLogic`이 `DataAccess`(concrete class) 대신 `ICustomerDataAccess` (non-concrete class)를 사용하도록 코드를 수정한다.
+마지막으로, `CustomerBusinessLogic`이 `DataAccess`(concrete class) 대신 `ICustomerDataAccess` (non-concrete class)를 사용하도록 코드를 수정한다.
 
 ```java
 public class CustomerBusinessLogic {
@@ -122,7 +122,5 @@ public class CustomerBusinessLogic {
 &nbsp;
 ## 출처
 ---
-- [Spring Core Framework Tutorials](https://www.journaldev.com/2888/spring-tutorial-spring-core-tutorial)
-- 스프링 부트로 배우는 자바 웹 개발 (제이펍)
 - [https://www.baeldung.com/](https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring)
-- [https://www.tutorialsteacher.com/](https://www.tutorialsteacher.com/ioc/inversion-of-control)
+- [https://www.tutorialsteacher.com/](https://www.tutorialsteacher.com/ioc/dependency-inversion-principle)
