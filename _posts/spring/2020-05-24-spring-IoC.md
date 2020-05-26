@@ -1,7 +1,7 @@
 ---
 title: "[스프링] 스프링 핵심 개념 정리 - IoC [1/4]"
 layout: post
-tags: '스프링'
+tags: ['스프링', 'IoC']
 subtitle: '스프링의 핵심 개념인 제어의 역전(IoC: Inversion of Control)을 학습한다.'
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: "[스프링] 어노테이션 살펴보기"
 layout: post
-tags: '스프링'
+tags: ['스프링', 'annotation']
 subtitle: '스프링의 구조와 설정을 위해서 사용되는 어노테이션에 대해서 학습한다'
 ---
 

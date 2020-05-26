@@ -1,7 +1,7 @@
 ---
 title: "[스프링] 스프링 핵심 개념 정리 - DIP [2/4]"
 layout: post
-tags: '스프링'
+tags: ['스프링', 'DIP']
 subtitle: '스프링의 핵심 개념인 의존 관계 역전의 법칙(DIP: Dependency Inversion Principle)을 학습한다.'
 ---
 

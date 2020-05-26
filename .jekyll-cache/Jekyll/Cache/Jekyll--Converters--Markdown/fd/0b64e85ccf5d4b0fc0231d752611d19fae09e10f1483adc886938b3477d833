@@ -1,0 +1,150 @@
+I"�2<h2 id="들어가며">들어가며</h2>
+<hr />
+<p>지난 포스팅에서 느슨한 결합(Loosely coupled) 상태를 구현하기 위해서 DIP 원칙을 적용하였다. 이번 포스팅에서는 의존 객체의 생성을 클래스 외부로 옮기기 위해서 의존성 주입(DI)과 전략 패턴(Stategy Pattern)을</p>
+
+<p>구현 할 것이다. 이는 느슨한 결합 상태를 만들기 위한 세 번째 단계다.</p>
+
+<p><img src="/images/spring-di-and-stategy-pattern-1.png" alt="getting-loosely-coupled-class" /></p>
+
+<h2 id="의존성-주입di-dependency-injection이란">의존성 주입(DI: Dependency Injection)이란?</h2>
+<hr />
+<p>DI는 IoC를 구현하기 위한 디자인 패턴이다. DI는 의존 객체의 생성을 클래스 외부에서 할 수 있도록 하고, 해당 객체를 클래스에 제공한다. DI를 사용하면 의존 객체의 생성과 바인딩을 의존(Dependent) 클래스의 외부로 옮길 수 있다.</p>
+
+<p>DI는 세 가지 클래스 타입을 포함한다.</p>
+<ol>
+  <li>클라이언트 클래스(Client Class): 클라이언트 클래스(Dependent class)는 서비스 클래스에 의존하는 클래스다.</li>
+  <li>서비스 클래스(Service Class): 서비스 클래스는(Dependency) 클라이언트에 서비스를 제공하는 클래스다.</li>
+  <li>주입 클래스(Injector Class): 주입 클래스는 서비스 클래스 오브젝트를 클라이언트 클래스에 주입한다.</li>
+</ol>
+
+<p><img src="/images/spring-di-and-stategy-pattern-2.png" alt="dependency injection" /></p>
+
+<p>위 그림은 세 클래스의 관계를 보여준다. Injector는 서비스의 객체를 생성하고, 클라이언트(서비스 객체를 이용)에 생성한 객체를 주입한다. 이처럼 DI는 서비스 객체의 생성을 클라이언트 외부로 옮겨 의존성을 낮춘다.</p>
+
+<p> </p>
+<h2 id="의존성-주입di의-유형">의존성 주입(DI)의 유형</h2>
+<hr />
+<p>주입 클래스는 클라이언트에 서비스를 주입한다. 그리고 의존성의 주입은 생성자, 속성, 메서드 세 가지 방식을 이용하여 이루어진다.</p>
+
+<p><strong>1. 생성자 주입(Constructor Injection)</strong>: Injector는 클라이언트의 생성자를 통해 서비스를 제공한다.</p>
+
+<p><strong>2. 속성 주입(Property Injection)</strong>: 속성 주입(aka the Setter Injection)에서 injector는 클라이언트 클래스의 public 속성을 통해 의존성을 제공한다.</p>
+
+<p><strong>3. 메서드 주입(Method Injection)</strong>: 클라이언트 클래스는 메서드를 선언하여 의존성을 주입하기 위해 선언한 인터페이스를 구현한다. 그리고 injector는 클라이언트 클래스에 의존성을 제공하기 위해 이 인터페이스를 사용한다.</p>
+
+<p>아래의 코드는 <code class="highlighter-rouge">CustomerBusinessLogic</code>에서 <code class="highlighter-rouge">CustomerDataAccess</code>의 객체를 얻기 위해 <code class="highlighter-rouge">Factory</code>를 사용한 예제다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ICustomerDataAccess</span> <span class="o">{</span>
+
+    <span class="nc">String</span> <span class="nf">getCustomerName</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerDataAccess</span> <span class="kd">implements</span> <span class="nc">ICustomerDataAccess</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="nf">CustomerDataAccess</span><span class="o">()</span> <span class="o">{}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getCustomerName</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">"Dummy Customer Name"</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DataAccessFactory</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">ICustomerDateAccess</span> <span class="nf">getCustomerDataAccessObj</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">CustomerDataAccess</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerBusinessLogic</span> <span class="o">{</span>
+
+    <span class="nc">ICustomerDataAccess</span> <span class="n">dataAccess</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">CustomerBusinessLogic</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">dataAccess</span> <span class="o">=</span> <span class="nc">DataAccessFactory</span><span class="o">.</span><span class="na">getCustomerDataAccessObj</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getCustomerName</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">dataAccess</span><span class="o">.</span><span class="na">getCustomerName</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>위 코드는 <code class="highlighter-rouge">CustomerBusinessLogic</code> 내에서 <code class="highlighter-rouge">DataAccessFactory</code>를 사용했다. 이로 인해서 발생할 수 있는 문제는 다음과 같다. <code class="highlighter-rouge">ICustomerDataAccess</code> 인터페이스를 구현한 새로운 클래스가 있고, <code class="highlighter-rouge">CustomerBusinessLogic</code>에서 새로운 클래스를 사용하려고 한다고 가정해보자. 그러면 <code class="highlighter-rouge">CustomerBusinessLogic</code>의 코드를 수정해야한다. DI를 구현하면 이 문제를 해결할 수 있다.</p>
+
+<p> </p>
+<h3 id="1-생성자-주입constructor-injection">1. 생성자 주입(Constructor Injection)</h3>
+<hr />
+<p>의존성을 생성자를 통해 주입하는 것을 생성자 주입이라고 한다. 다음 예제는 생성자를 이용해 DI를 구현한 예제다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerBusinessLogic</span> <span class="o">{</span>
+
+    <span class="nc">ICustomerDataAccess</span> <span class="n">dataAccess</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">CustomerBusinessLogic</span><span class="o">(</span><span class="nc">ICustomerDataAccess</span> <span class="n">custDataAccess</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">dataAccess</span> <span class="o">=</span> <span class="n">custDataAccess</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">ProcessCustomerData</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">dataAccess</span><span class="o">.</span><span class="na">getCustomerName</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ICustomerDataAccess</span> <span class="o">{</span>
+    
+    <span class="nc">String</span> <span class="nf">getCustomerData</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerDataAccess</span> <span class="kd">implements</span> <span class="nc">ICustomerDataAccess</span> <span class="o">{</span>
+    
+    <span class="kd">public</span> <span class="nf">CustomerDataAccess</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getCustomerId</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">"Dummy Customer Name"</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>위 예제에서 <code class="highlighter-rouge">CustomerBusinessLogic</code>의 생성자는 <code class="highlighter-rouge">ICustomerDataAccess</code>를 매개변수로 가진다. 따라서 <code class="highlighter-rouge">CustomerBusinessLogic</code>을 생성하기 위해서는 반드시 <code class="highlighter-rouge">ICustomerDataAccess</code> 객체를 주입 해야 한다.</p>
+
+<p>아래의 예제는 <code class="highlighter-rouge">CustomerService</code>를 통해 <code class="highlighter-rouge">CustomerDataAccess</code> 객체를 생성하여 <code class="highlighter-rouge">CustomerBusinessLogic</code>에 주입한다. 따라서 <code class="highlighter-rouge">CustomerBusinessLogic</code>은 <code class="highlighter-rouge">CustomerDataAccess</code>의 객체를 더 이상 만들지 않는다. 대신 <code class="highlighter-rouge">CustomerService</code>가 적절한 <code class="highlighter-rouge">ICustomerDataAccess</code>를 구현한 클래스를 생성하고 주입한다. 결과적으로 <code class="highlighter-rouge">CustomerBusinessLogic</code>과 <code class="highlighter-rouge">CustomerDataAccess</code>는 더욱 느슨하게 결합 된 클래스가 됐다.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerService</span> <span class="o">{</span>
+
+    <span class="nc">CustomerBusinessLogic</span> <span class="n">customerBL</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">customerService</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">customerBL</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">CustomerBusinessLogic</span><span class="o">(</span><span class="k">new</span> <span class="nc">CustomerDataAccess</span><span class="o">());</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getCustomerName</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">customerBL</span><span class="o">.</span><span class="na">getCustomerName</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p> </p>
+<h3 id="2-속성-주입property-injection">2. 속성 주입(Property Injection)</h3>
+<hr />
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerBusinessLogic</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="nc">ICustomerDataAccess</span> <span class="n">dataAccess</span><span class="o">;</span>
+    
+    <span class="kd">public</span> <span class="nf">CustomerBusinessLogic</span><span class="o">()</span> <span class="o">{}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getCustomerName</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">dataAccess</span><span class="o">.</span><span class="na">getCustomerName</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+    <span class="o">}</span>
+
+
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+<p> </p>
+<h2 id="참고">참고</h2>
+<ul>
+  <li><a href="https://www.baeldung.com/inversion-control-and-dependency-injection-in-spring">https://www.baeldung.com/</a></li>
+  <li><a href="https://www.tutorialsteacher.com/ioc/inversion-of-control">https://www.tutorialsteacher.com/</a></li>
+</ul>
+:ET

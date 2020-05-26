@@ -1,4 +1,4 @@
-I"�'<h2 id="들어가며">들어가며</h2>
+I"+<h2 id="들어가며">들어가며</h2>
 <hr />
 <p>지난 포스팅에서 느슨한 결합(Loosely coupled) 상태를 구현하기 위해서 DIP 원칙을 적용하였다. 이번 포스팅에서는 의존 객체의 생성을 클래스 외부로 옮기기 위해서 의존성 주입(DI)과 전략 패턴(Stategy Pattern)을</p>
 
@@ -26,19 +26,11 @@
 <hr />
 <p>주입 클래스는 클라이언트에 서비스를 주입한다. 그리고 의존성의 주입은 생성자, 속성, 메서드 세 가지 방식을 이용하여 이루어진다.</p>
 
-<ol>
-  <li>
-    <p>생성자 주입(Constructor Injection): Injector는 클라이언트의 생성자를 통해 서비스를 제공한다.</p>
-  </li>
-  <li>
-    <p>속성 주입(Property Injection): 속성 주입(aka the Setter Injection)에서 injector는 클라이언트 클래스의 public 속성을 통해 의존성을 제공한다.</p>
-  </li>
-  <li>
-    <p>메서드 주입(Method Injection): 클라이언트 클래스는 메서드를 선언하여 의존성을 주입하기 위해 선언한 인터페이스를 구현한다. 그리고 injector는 클라이언트 클래스에 의존성을 제공하기 위해 이 인터페이스를 사용한다.</p>
-  </li>
-</ol>
+<p><strong>1. 생성자 주입(Constructor Injection)</strong>: Injector는 클라이언트의 생성자를 통해 서비스를 제공한다.</p>
 
-<p>이전 포스팅에서 사용한 예제를 그대로 사용해보겠다. 이전 포스팅 DIP에서 CustomerBusinessLogic클래스 안에 Factory 클래스를 사용했다. CustomerDataAccess 클래스의 객체를 얻기 위해서. 아래와 같이.</p>
+<p><strong>2. 속성 주입(Property Injection)</strong>: 속성 주입(aka the Setter Injection)에서 injector는 클라이언트 클래스의 public 속성을 통해 의존성을 제공한다.</p>
+
+<p><strong>3. 메서드 주입(Method Injection)</strong>: 클라이언트 클래스는 메서드를 선언하여 의존성을 주입하기 위해 선언한 인터페이스를 구현한다. 그리고 injector는 클라이언트 클래스에 의존성을 제공하기 위해 이 인터페이스를 사용한다.</p>
 
 <p>아래의 코드는 <code class="highlighter-rouge">CustomerBusinessLogic</code>에서 <code class="highlighter-rouge">CustomerDataAccess</code>의 객체를 얻기 위해 <code class="highlighter-rouge">Factory</code>를 사용한 예제다.</p>
 
@@ -65,70 +57,54 @@
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerBusinessLogic</span> <span class="o">{</span>
 
-    <span class="nc">ICustomerDataAccess</span> <span class="n">custDataAccess</span><span class="o">;</span>
+    <span class="nc">ICustomerDataAccess</span> <span class="n">dataAccess</span><span class="o">;</span>
 
     <span class="kd">public</span> <span class="nf">CustomerBusinessLogic</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">custDataAccess</span> <span class="o">=</span> <span class="nc">DataAccessFactory</span><span class="o">.</span><span class="na">getCustomerDataAccessObj</span><span class="o">();</span>
+        <span class="n">dataAccess</span> <span class="o">=</span> <span class="nc">DataAccessFactory</span><span class="o">.</span><span class="na">getCustomerDataAccessObj</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getCustomerName</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">custDataAccess</span><span class="o">.</span><span class="na">getCustomerName</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">dataAccess</span><span class="o">.</span><span class="na">getCustomerName</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></div>
 
-<p>위 예제 코드의 문제점은 CustomerBusinessLogic 클래스 안에서 DataAccessFactory 클래스를 사용했다는 것이다. ICustomerDataAccess 클래스의 또 다른 구현이 있다고 가정하자. 그리고 우리는 CustomerBusinessLogic 안의 새로운 클래스를 사용하기를 원한다고 가정하자. 그러면 우리는 CustomerBusinessLogic 클래스 안에 있는 소스코드를 수정해야한다. DI 패턴은 이 문제를 의존 객체를 생성자, 속성, 인터페이스를 통해 주입해서 해결한다.</p>
+<p>위 코드는 <code class="highlighter-rouge">CustomerBusinessLogic</code> 내에서 <code class="highlighter-rouge">DataAccessFactory</code>를 사용했다. 이로 인해서 발생할 수 있는 문제는 다음과 같다. <code class="highlighter-rouge">ICustomerDataAccess</code> 인터페이스를 구현한 새로운 클래스가 있고, <code class="highlighter-rouge">CustomerBusinessLogic</code>에서 새로운 클래스를 사용하려고 한다고 가정해보자. 그러면 <code class="highlighter-rouge">CustomerBusinessLogic</code>의 코드를 수정해야한다. DI를 구현하면 이 문제를 해결할 수 있다.</p>
 
-<p>다음 그림은 위 예제의 DI 패턴 구현이다.</p>
-
-<blockquote>
-  <p>Image</p>
-</blockquote>
-
-<p>위의 그림처럼 CustomerService 클래스는 injector 클래스가 되었다. 서비스 클래스의 객체를 설정하는 클라이언트 클래스 서비스에. 생성자, 속성, 메서드를 통해서. 느슨한 결합을 구현하기 위해. 각각의 옵션을 조금 더 살펴보자.</p>
-
-<h3 id="constructor-injection">Constructor Injection</h3>
+<p> </p>
+<h3 id="생성자-주입constructor-injection">생성자 주입(Constructor Injection)</h3>
 <hr />
-<p>앞서 언급한 것처럼 의존성을 생성자를 통해 주입할 떄 이를 생성자 주입이라고 한다.</p>
+<p>의존성을 생성자를 통해 주입하는 것을 생성자 주입이라고 한다. 다음 예제는 생성자를 이용해 DI를 구현한 예제다.</p>
 
-<p>다음 예제를 생성자를 사용한 DI를 이용해 구현했다고 생각해보자.</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerBusinessLogic</span> <span class="o">{</span>
 
-<blockquote>
-  <h3 id="example-constructor-injection">Example: Constructor Injection</h3>
-  <p>```java
-public class CustomerBusinessLogic {</p>
-</blockquote>
+    <span class="nc">ICustomerDataAccess</span> <span class="n">dataAccess</span><span class="o">;</span>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ICustomerDataAccess dataAccess;
+    <span class="kd">public</span> <span class="nf">CustomerBusinessLogic</span><span class="o">(</span><span class="nc">ICustomerDataAccess</span> <span class="n">custDataAccess</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">dataAccess</span> <span class="o">=</span> <span class="n">custDataAccess</span><span class="o">;</span>
+    <span class="o">}</span>
 
-public CustomerBusinessLogic(ICustomerDataAccess custDataAccess) {
-    dataAccess = custDataAccess;
-}
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">ProcessCustomerData</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">dataAccess</span><span class="o">.</span><span class="na">getCustomerName</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
 
-public CustomerBusinessLogic() {
-    dataAccess = new CustomerDataAccess();
-}
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">ICustomerDataAccess</span> <span class="o">{</span>
+    
+    <span class="nc">String</span> <span class="nf">getCustomerData</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">);</span>
+<span class="o">}</span>
 
-public String ProcessCustomerData(int id) {
-    return dataAccess.getCustomerName();
-} }
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CustomerDataAccess</span> <span class="kd">implements</span> <span class="nc">ICustomerDataAccess</span> <span class="o">{</span>
+    
+    <span class="kd">public</span> <span class="nf">CustomerDataAccess</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getCustomerId</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">"Dummy Customer Name"</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
 </code></pre></div></div>
 
-<p>public interface ICustomerDataAccess {</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>String getCustomerData(int id); }
-</code></pre></div></div>
-
-<p>public class CustomerDataAccess implements ICustomerDataAccess {</p>
-
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public CustomerDataAccess() { }
-
-public String getCustomerId(int id) {
-    return "Dummy Customer Name";
-} } ```
-</code></pre></div></div>
-
-<p>위 예제에서 CustomerBusinessLogic은 매개변수의 타입으로 ICustomerDataAccess을 가진다. 이를 호출하는 클래스는 반드시 ICustomerDataAccess 객체를 주입해야한다.</p>
+<p>위 예제에서 <code class="highlighter-rouge">CustomerBusinessLogic</code>의 생성자는 <code class="highlighter-rouge">ICustomerDataAccess</code>를 매개변수로 가진다. 따라서 <code class="highlighter-rouge">CustomerBusinessLogic</code>을 생성하기 위해서는 반드시 <code class="highlighter-rouge">ICustomerDataAccess</code> 객체를 주입 해야 한다.</p>
 
 <blockquote>
   <h3 id="example-inject-dependency">Example: Inject Dependency</h3>
