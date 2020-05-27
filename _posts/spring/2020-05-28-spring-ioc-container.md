@@ -14,6 +14,7 @@ subtitle: '스프링의 핵심 개념 IoC Container를 학습한다.'
 
 &nbsp;
 ## IoC Container란?
+---
 IoC Container는 자체적으로 의존성을 주입하도록 돕는 프레임워크로 런타임에 생성자, 속성, 메서드를 통해 지정 된 객체에 의존성을 주입한다. 또한 객체의 생성 직접 생성하며 해당 객체의 생명 주기를 관리한다. 이로 인해 우리는 객체를 직접 생성하거나 관리 할 필요가 없어진다.
 
 모든 컨테이너는 반드시 다음 DI 생명주기를 따르도록 지원해야한다.
@@ -27,4 +28,5 @@ IoC Container는 자체적으로 의존성을 주입하도록 돕는 프레임�
 
 &nbsp;
 ## 참고
+---
 - [https://www.tutorialsteacher.com/](https://www.tutorialsteacher.com/ioc/inversion-of-control)
