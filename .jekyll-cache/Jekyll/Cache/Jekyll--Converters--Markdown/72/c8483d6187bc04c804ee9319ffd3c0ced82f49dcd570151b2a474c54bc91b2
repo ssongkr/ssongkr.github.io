@@ -1,8 +1,6 @@
-I"8I<h2 id="들어가며">들어가며</h2>
+I"~K<h2 id="들어가며">들어가며</h2>
 <hr />
-<p>지난 포스팅에서 느슨한 결합(Loosely coupled) 상태를 구현하기 위해서 DIP 원칙을 적용하였다. 이번 포스팅에서는 의존 객체의 생성을 클래스 외부로 옮기기 위해서 의존성 주입(DI)과 전략 패턴(Strategy Pattern)을</p>
-
-<p>구현 할 것이다. 이는 느슨한 결합 상태를 만들기 위한 세 번째 단계다.</p>
+<p>지난 포스팅에서 느슨한 결합(Loosely coupled) 상태를 구현하기 위해서 DIP 원칙을 적용하였다. 이번 포스팅에서는 의존 객체의 생성을 클래스 외부로 옮기기 위해서 의존성 주입(DI)과 전략 패턴(Strategy Pattern)을 구현 할 것이다. 이는 느슨한 결합 상태를 만들기 위한 세 번째 단계다.</p>
 
 <p><img src="/images/spring-di-and-strategy-pattern-1.png" alt="getting-loosely-coupled-class" /></p>
 
@@ -17,7 +15,7 @@
   <li>주입 클래스(Injector Class): 주입 클래스는 서비스 클래스 오브젝트를 클라이언트 클래스에 주입한다.</li>
 </ol>
 
-<p><img src="/images/spring-di-and-stategy-pattern-2.png" alt="dependency injection" /></p>
+<p><img src="/images/spring-di-and-strategy-pattern-2.png" alt="dependency injection" /></p>
 
 <p>위 그림은 세 클래스의 관계를 보여준다. Injector는 서비스의 객체를 생성하고, 클라이언트(서비스 객체를 이용)에 생성한 객체를 주입한다. 이처럼 DI는 서비스 객체의 생성을 클라이언트 외부로 옮겨 의존성을 낮춘다.</p>
 
@@ -198,6 +196,13 @@
 </code></pre></div></div>
 
 <p>위 예제에서 <code class="highlighter-rouge">CustomerBusinessLogic</code>은 <code class="highlighter-rouge">IDataAccessDependency</code> 인터페이스를 구현한다. 따라서 <code class="highlighter-rouge">Injector(CustomerService)</code>는 클라이언트 클래스에 <code class="highlighter-rouge">CustomerDataAccess</code>(dependent class)를 <code class="highlighter-rouge">setDependency()</code> 메서드를 이용하여 주입할 것이다.</p>
+
+<p> </p>
+<h2 id="마무리하며">마무리하며</h2>
+<hr />
+<p>지금까지 느슨하게 결합 된 클래스를 구현하기 위해 몇 가지 원칙과 패턴을 사용했다. 좀 더 전문적인 프로젝트에는 많은 종속 클래스가 있고, 이러한 패턴을 구현하는데 많은 시간이 걸린다. IoC 컨테이너는 이 문제를 해결한다. 다음 포스팅에서는 IoC 컨테이너에 대해서 알아보도록 하겠다.</p>
+
+<p>포스팅을 하고보니 전략패턴에 대한 설명이 없다.. 이 부분은 추후에 포스팅을 해야겠다 ㅠㅠ</p>
 
 <p> </p>
 <h2 id="참고">참고</h2>
