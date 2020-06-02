@@ -194,20 +194,23 @@
   overflow: hidden;
 }
 
-.markdown-body code,
-.markdown-body kbd,
-.markdown-body pre {
-  /* font-family: monospace, monospace;
-  font-size: 1em; */
+.markdown-body li code {
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-    color: #E53A40;
-    padding: 0.2em 0.4em;
-    padding-top: 0.2em;
-    padding-bottom: 0.2em;
-    margin: 0;
-    font-size: 85%;
-    background-color: rgba(0,0,0,0.08);
-    border-radius: 3px;
+  color: #E53A40;
+  padding: 0.2em 0.4em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  margin: 0;
+  font-size: 85%;
+  background-color: rgba(0,0,0,0.08);
+  border-radius: 3px;
+}
+
+.markdown-body kbd,
+.markdown-body pre,
+.markdown-body code {
+  font-family: monospace, monospace;
+  font-size: 1em;
 }
 
 .markdown-body hr {
