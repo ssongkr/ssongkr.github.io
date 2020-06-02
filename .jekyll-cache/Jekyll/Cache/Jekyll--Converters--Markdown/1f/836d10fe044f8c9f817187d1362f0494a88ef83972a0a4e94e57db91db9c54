@@ -1,0 +1,4 @@
+I"<h2 id="들어가며">들어가며</h2>
+<hr />
+<p>지난 포스팅에서 DI(Dependency Injection)을 구현하였다. 느슨하게 결합된 상태를 얻기 위한 마지막 과정인 IoC Container(a.k.a. DI Container)에 대해서 알아보도록 하겠다.</p>
+:ET

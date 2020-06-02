@@ -1,4 +1,0 @@
-I"j<h2 id="들어가며">들어가며</h2>
-<hr />
-<p>지난 포스팅에서 Dependency Injection 패턴을 구현하는 방법에 대해 학습하였다. IoC Container(a.k.a. DI Container)는 자동으로 DI를 구현하도록 돕는 프레임워크다. IoC Container는 객체의 생성과 생명주기를 관리하고, 클래스에 의존성을 주입한다.</p>
-:ET

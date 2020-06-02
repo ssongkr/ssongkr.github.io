@@ -16,3 +16,7 @@ https://post.naver.com/viewer/postView.nhn?volumeNo=27046347&memberNo=2521903
 
 HTTP 너무 좋은 포스팅
 https://www.joinc.co.kr/w/Site/Network_Programing/AdvancedComm/HTTP
+
+
+서블릿 컨테이너 스프링 컨테이너?
+https://gmlwjd9405.github.io/2018/11/04/servlet-vs-jsp.html

@@ -1,0 +1,44 @@
+I"�<h2 id="들어가며">들어가며</h2>
+<hr />
+<p>Servlet, JSP를 시작으로 서버 프로그래밍을 공부하기 시작했고, 최근에는 스프링을 이용하여 서버 프로그래밍을 하고 있다. 처음에는 Forward와 Redirect의 차이를 어느정도 알고 사용했지만, 프로그래밍에 익숙해지는데 집중하다보니 어느 순간부터 무분별하게 Forward와 Redirect를 사용하기 시작했다. 이번 포스팅을 통해 해당 개념들을 다시 한번 정리해보고자 한다.</p>
+
+<p> </p>
+<h2 id="포워드forward">포워드(Forward)</h2>
+<hr />
+<p>포워드는 우리말로 <strong>전달하다</strong>라는 뜻을 가지고 있다. 포워드는 클라이언트의 요청을 현재 리소스를 통해 처리할 수 없을 경우, 요청을 처리하기 위해 동일한 서버 내에 있는 다른 리소스로 요청을 전달하는 것이다.</p>
+
+<p><img src="/images/forward.png" alt="forward" /></p>
+
+<h3 id="포워드-처리-과정">포워드 처리 과정</h3>
+<ul>
+  <li><code class="highlighter-rouge">forward()</code>를 호출하면 요청을 추가적으로 처리하기 위해 동일한 서버의 다른 리소스로 요청이 전달된다.</li>
+  <li>포워드는 웹 컨터이너 내부에서 모든 처리가 이루어지기 때문에, 클라이언트나 브라우저는 처리에 관여하지 않는다.</li>
+  <li><code class="highlighter-rouge">request</code>와 <code class="highlighter-rouge">response</code> 객체를 새로운 리소스에 전달한다. 그리고 새로운 리소스는 요청을 마저 처리한다.</li>
+</ul>
+
+<p>이처럼 포워드는 서버 내부에서 모든 처리가 이루어진다. 따라서 웹 브라우저는 최초 호출한 URL만 확인할 수 있고, 이동한 페이지의 URL 정보를 볼 수 없다. 그리고 <code class="highlighter-rouge">request.setAttribute()</code> 메서드를 사용하여 새로운 리소스에 이전 데이터를 넘겨줄 수 있다.</p>
+
+<p> </p>
+<h2 id="리다이렉트redirect">리다이렉트(Redirect)</h2>
+<hr />
+<p>리다이렉트는 <strong>다시 보내다</strong>라는 뜻을 가지고 있다. 웹 개발 관점에서 리다이렉트는 클라이언트가 새로운 GET 요청을 보낼 수 있도록, 서버에서 <code class="highlighter-rouge">Location header</code>에 새로운 URL을 포함하여 클라이언트에게 빈 HTTP 응답을 보내는 행위다.</p>
+
+<p><img src="/images/redirect.png" alt="redirect" /></p>
+
+<h3 id="리다이렉트가-처리되는-과정은-다음과-같다">리다이렉트가 처리되는 과정은 다음과 같다.</h3>
+<ul>
+  <li>클라이언트가 <code class="highlighter-rouge">some.jsp</code>에 HTTP 요청 메시지를 보낸다.</li>
+  <li>서버는 HTTP <code class="highlighter-rouge">Location: other.jsp</code> 헤더를 포함한 응답 메시지를 보낸다.</li>
+  <li>클라이언트는 HTTP 요청 메시지를 <code class="highlighter-rouge">other.jsp</code>로 보낸다. (브라우저의 주소창에 반영된다.)</li>
+  <li>서버는 HTTP <code class="highlighter-rouge">other.jsp</code>의 내용을 포함한 응답 메시지를 보낸다.</li>
+</ul>
+
+<p> </p>
+<h2 id="출처">출처</h2>
+<hr />
+<p>https://stackoverflow.com/questions/6068891/difference-between-jsp-forward-and-redirect</p>
+
+<p>https://stackoverflow.com/questions/2047122/requestdispatcher-forward-vs-httpservletresponse-sendredirect</p>
+
+<p>https://doublesprogramming.tistory.com/63</p>
+:ET

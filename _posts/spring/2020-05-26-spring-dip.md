@@ -13,6 +13,7 @@ subtitle: '스프링의 핵심 개념인 의존 관계 역전의 법칙(DIP: Dep
 
 &nbsp;
 ## DIP(Dependency Inversion Principle)이란?
+---
 DIP를 해석하면 의존 관계 역전의 원칙이다. `Robert Martin`에 의해서 만들어진 객체지향 원칙으로 그 내용은 다음과 같다.
 
 1. 상위(High-level) 모듈은 하위(Low-level) 모듈에 의존하면 안된다. 두 모듈은 모두 **추상적 개념(abstraction)**에 의존해야 한다.
