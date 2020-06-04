@@ -177,7 +177,7 @@
 
 .markdown-body img {
   display: block;
-  border-style: none;
+  /* border-style: none; */
   margin: 0 auto;
 }
 
