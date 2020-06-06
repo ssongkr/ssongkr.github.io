@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "SPA(Single Page Application)란?"
+title: "작성중인 포스팅입니다."
 tags: 'SPA'
 subtitle: '스프링의 핵심 개념 IoC Container를 학습한다.'
 ---
