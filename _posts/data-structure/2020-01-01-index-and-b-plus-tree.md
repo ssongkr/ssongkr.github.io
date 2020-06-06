@@ -2,6 +2,7 @@
 title: "작성중인 포스팅입니다"
 # title: "[Database] Index and B-Tree"
 layout: post
+# tags: ['ING']
 # tags: ['DB', 'Index', 'B-Tree']
 subtitle: ''
 ---
